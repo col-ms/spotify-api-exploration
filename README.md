@@ -8,7 +8,7 @@ An introductory exploration of utilizing Spotify's API to access song and stream
 
 This serves as an introduction to working with APIs for data sourcing, working with a version control software (git), and maintaining a properly documented project from start to finish.
 
-The project will focus on Mac Miller's discography, and take a look at how his music style changed as he matured and began working with more experimental sounds and genres. 
+The project will focus on Mac Miller's [discography](https://open.spotify.com/artist/4LLpKhyESsyAXpc4laK94U), and take a look at how his music style changed as he matured and began working with more experimental sounds and genres. 
 
 ### Research Questions
 
