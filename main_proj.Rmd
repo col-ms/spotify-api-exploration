@@ -1,0 +1,10 @@
+---
+title: "Exploring Mac Miller's Discography with Spotify API"
+author: "Collin Smith"
+date: '2022-05-19'
+output: html_document
+---
+
+Hello, and welcome to my very first Markdown publication. I am still relatively new to R, with about 2 years of exposure and experience with the language. The vast majority of my time spent with R has been for university courses. Throughout this time I have learned a great deal from books like Hadley Wickham's [R for Data Science](https://r4ds.had.co.nz/), as well as tutorials, articles, and markdown pages from sites such as [RPubs](https://rpubs.com/), [R-bloggers](https://www.r-bloggers.com/), and [Towards Data Science](https://towardsdatascience.com/). My hope is that this project can in turn be used to help someone else down the road, as others have helped me.
+
+project, in addition to being my first publicly available markdown file, is also my first experience working on a project with git. Through this project I aim to become more comfortable with version control practices.

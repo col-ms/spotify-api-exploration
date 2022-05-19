@@ -1,12 +1,15 @@
-library(spotifyr)
+#This file contains functions used in the project
 
-# Authentication to allow access to Spotify API
-Sys.setenv(SPOTIFY_CLIENT_ID = 
-             readr::read_lines("spotify_dev_info.txt")[1])
+authenticate <- function(){
 
-Sys.setenv(SPOTIFY_CLIENT_SECRET = 
-             readr::read_lines("spotify_dev_info.txt")[2])
+  # Authentication to allow access to Spotify API
+  Sys.setenv(SPOTIFY_CLIENT_ID = 
+               readr::read_lines("spotify_dev_info.txt")[1])
+  
+  Sys.setenv(SPOTIFY_CLIENT_SECRET = 
+               readr::read_lines("spotify_dev_info.txt")[2])
+  
+  # Store access token for use in API call functions
+  access_token = spotifyr::get_spotify_access_token()
 
-# Store access token for use in API call functions
-access_token = get_spotify_access_token()
-
+}
