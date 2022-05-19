@@ -1,4 +1,4 @@
-#This file contains functions used in the project
+# authentication function
 
 authenticate <- function(){
 
