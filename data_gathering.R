@@ -4,12 +4,11 @@
 
 # Loads any user-defined functions stored in file, and
 # performs necessary authentication for API access
-source('functions.R')
+source('auth_func.R')
+authenticate()
 
 # retrieve discography
-mm_disco <- get_artist_audio_features(artist = 'Mac Miller')
+mm_disco <- spotifyr::get_artist_audio_features(artist = 'Mac Miller')
 
 # familiarize ourselves with the data structures gathered
 colnames(mm_disco)
-
-glimpse(mm_disco)
