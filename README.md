@@ -19,3 +19,6 @@ These are the questions I hope to answer throughout this project.
 - What sub-genres emerge from analysis of his discography? Can songs be assigned accurately using a clustering algorithm?
 - How do the lyrics and the tonality of the songs fit together?
 
+### Goal Model
+
+Using the data aforementioned, my goal for this model is to predict which album, or timeframe, a particular song belongs to. I think this will be a little challenging, as music is often one of those things that is typically measured qualitatively, and might be hard to assign values to. 
