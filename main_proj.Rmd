@@ -23,10 +23,11 @@ songs, allowing for sentiment to be explored and visualized.
 
 ### Obtaining Spotify API Credentials
 
-To begin, we will first need to head over to the [Spotify for Developers](https://developer.spotify.com/dashboard/) page, where we will 
-be registering an application to obtain an API key. Once you've logged in, 
-select "Create an App" and fill out the required fields. Completing this
-will give you access to two important fields: your **client id** and 
+To begin, we will first need to head over to the 
+[Spotify for Developers](https://developer.spotify.com/dashboard/) page, 
+where we will be registering an application to obtain an API key. Once you've 
+logged in, select "Create an App" and fill out the required fields. Completing 
+thiswill give you access to two important fields: your **client id** and 
 your **client secret** (or API key). These fields will be used to let the
 API know who is accessing it and that you have proper authentication. 
 To get started, run the following code:
