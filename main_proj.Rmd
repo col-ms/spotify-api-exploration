@@ -27,10 +27,18 @@ To begin, we will first need to head over to the
 [Spotify for Developers](https://developer.spotify.com/dashboard/) page, 
 where we will be registering an application to obtain an API key. Once you've 
 logged in, select "Create an App" and fill out the required fields. Completing 
-thiswill give you access to two important fields: your **client id** and 
+this will give you access to two important fields: your **client id** and 
 your **client secret** (or API key). These fields will be used to let the
 API know who is accessing it and that you have proper authentication. 
-To get started, run the following code:
+To get started, first install the **spotifyr** package if you don't already
+have it.
+
+```{r pkg-install, eval = F, include = T}
+install.packages("spotifyr")
+```
+
+Next, we can use the following code to pass out authentication credentials
+to the API, giving us access.
 
 ```{r auth-example, eval = F, include = T}
 Sys.setenv(SPOTIFY_CLIENT_ID = 'your client id')
@@ -40,4 +48,31 @@ access_token <- get_spotify_access_token()
 
 ```{r auth-actual, eval = T, echo = F}
 source('auth_func.R')
+authenticate()
 ```
+
+Now that you are authenticated with the API, we can begin using the 
+**spotifyr** package's functions to retrieve information.
+In this project, we will be analyzing Mac Miller's discography and exploring 
+how his sound changed throughout his career. To get information regarding 
+a single artist's discography, we can use the `get_artist_audio_features()` 
+function. The function will return a dataframe containing information about all 
+of the artists' music that is hosted on Spotify. The function takes many 
+possible arguments, but for the sake of this project, we only need to pass in 
+one: the name of the artist for which we wish to get information.
+
+```{r get-data, echo = T}
+library(spotifyr)
+mm_data <- get_artist_audio_features(artist = "Mac Miller")
+```
+
+To check that this function performed as expected, let's take a very quick
+glance at the returned dataframe.
+
+```{r data-check, echo = T}
+colnames(mm_data)
+unique(mm_data$album_name)
+head(mm_data$track_name)
+dim(mm_data)
+```
+
