@@ -1,4 +1,4 @@
-# Spotify
+# Using Spotify API to explore Mac Miller's Discography
 
 ### Description
 
