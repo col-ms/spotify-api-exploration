@@ -21,4 +21,4 @@ These are the questions I hope to answer throughout this project.
 
 ### Goal Model
 
-Using the data aforementioned, my goal for this model is to predict which album, or timeframe, a particular song belongs to. I think this will be a little challenging, as music is often one of those things that is typically measured qualitatively, and might be hard to assign values to. 
+Using the data aforementioned, my goal for this model is to predict which album, or timeframe, a particular song belongs to. I think this will be a little challenging, as music is typically measured qualitatively, and might be hard to assign values to. 
