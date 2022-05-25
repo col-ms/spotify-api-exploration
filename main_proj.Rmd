@@ -107,3 +107,43 @@ that Faces was actually released as a mixtape back in 2014, much earlier than
 the variable from Spotify's data would suggest. Since this project involves 
 analyzing how Mac's music changed throughout the duration of his career, it is
 important to have accurate ordering of dates associated with the albums.
+
+To remedy this, we can use some quick webscraping to pull the release dates 
+from the wiki page and amend the data.
+
+```{r wiki-scrape, message = F}
+# run install.packages('rvest') if you don't have this package already
+library(rvest)
+url <- "https://en.wikipedia.org/wiki/Mac_Miller_discography"
+wp <- read_html(url)
+rel_dates <- html_nodes(
+  wp, "th i , th+ td li:nth-child(1) , th i a") %>%
+  html_text()
+```
+
+Now, the above code may look a little intimidating if you are new to
+webscraping. That's okay, it looks much scarier than it really is. The
+`read_html()` function simply reads the page's html code and stores it as a 
+list in your R environment. Then, we need to tell R what parts of the webpage
+we want extracted. To do this, I used the 
+[SelectorGadget](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb?hl=en) extension for Chrome. Using the tool makes webscraping
+very simple, you just highlight the elements you wish to capture and the tool
+will give you the CSS selector for it. That is how the arguments you see in the
+`html_nodes()` function were found. Once you've identified the nodes, pass the
+results to the `html_text()` function and voila! You know have text from a
+website stored right in your R environment.
+
+Let's check out what our scraping resulted in:
+
+```{r chk-scrape}
+head(rel_dates, 20)
+```
+
+While that looks pretty good, you can see that the album titles are listed
+twice, and the release dates could be formatted a little nicer. Let's fix that
+up to a nicer format.
+
+```{r scrape-cleaning}
+
+```
+
