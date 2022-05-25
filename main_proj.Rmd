@@ -5,6 +5,8 @@ date: '2022-05-19'
 output: github_document
 ---
 
+### Welcome!
+
 Hello, and welcome to my very first Markdown publication. I am still relatively 
 new to R, with about 2 years of exposure and experience with the language. 
 The vast majority of my time spent with R has been for university courses. 
@@ -51,6 +53,8 @@ source('auth_func.R')
 authenticate()
 ```
 
+### Gathering the Data
+
 Now that you are authenticated with the API, we can begin using the 
 **spotifyr** package's functions to retrieve information.
 In this project, we will be analyzing Mac Miller's discography and exploring 
@@ -72,7 +76,34 @@ glance at the returned dataframe.
 ```{r data-check, echo = T}
 colnames(mm_data)
 unique(mm_data$album_name)
-head(mm_data$track_name)
+head(mm_data$track_name, 15)
 dim(mm_data)
 ```
 
+Excellent! The returned dataframe contains ``r dim(mm_data)[1]`` observations,
+or in this case songs, and each observation has ``r dim(mm_data)[2]`` variables.
+We can see from the `unique(mm_data$album_name)` function that the albums are
+listed in order of upload date, with Faces being the most recent album added
+to Mac's Spotify page. While this may seem handy, it is important to note that
+the order in which albums are uploaded to Spotify is not always the same order
+that the albums were released. We can observe this by taking a look at the
+`album_release_date` variable.
+
+```{r libs, echo = F}
+library(tidyverse)
+library(plotly)
+```
+
+```{r album-dates, echo = T}
+mm_data %>% 
+  select(album_name, album_release_date) %>%
+  distinct() %>% knitr::kable()
+```
+
+This readout implies that Faces is the most recent album to release. However,
+by checking Mac's 
+[discography](https://en.wikipedia.org/wiki/Mac_Miller_discography), we can see
+that Faces was actually released as a mixtape back in 2014, much earlier than
+the variable from Spotify's data would suggest. Since this project involves 
+analyzing how Mac's music changed throughout the duration of his career, it is
+important to have accurate ordering of dates associated with the albums.
