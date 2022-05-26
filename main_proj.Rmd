@@ -97,7 +97,7 @@ library(plotly)
 ```{r album-dates, echo = T}
 mm_data %>% 
   select(album_name, album_release_date) %>%
-  distinct() %>% knitr::kable()
+  distinct()
 ```
 
 This readout implies that Faces is the most recent album to release. However,
@@ -108,7 +108,7 @@ the variable from Spotify's data would suggest. Since this project involves
 analyzing how Mac's music changed throughout the duration of his career, it is
 important to have accurate ordering of dates associated with the albums.
 
-To remedy this, we can use some quick webscraping to pull the release dates 
+To remedy this, we can use some quick web scraping to pull the release dates 
 from the wiki page and amend the data.
 
 ```{r wiki-scrape, message = F}
@@ -117,7 +117,7 @@ library(rvest)
 url <- "https://en.wikipedia.org/wiki/Mac_Miller_discography"
 wp <- read_html(url)
 rel_dates <- html_nodes(
-  wp, "th i , th+ td li:nth-child(1) , th i a") %>%
+  wp, "th i , .plainrowheaders th+ td li:nth-child(1) , th i a") %>%
   html_text()
 ```
 
@@ -144,6 +144,32 @@ twice, and the release dates could be formatted a little nicer. Let's fix that
 up to a nicer format.
 
 ```{r scrape-cleaning}
+# Remove duplicates and format into dataframe for manipulation
+rel_dates <- matrix(
+  unique(rel_dates), ncol = 2, byrow = T) %>%
+  as.data.frame()
+
+# Filter out any works that aren't hosted on Spotify
+rel_dates <- rel_dates %>% filter(
+  V1 %in% (unique(mm_data$album_name) %>% gsub("( \\().*", "", .)))
+
+# Cleaning date text
+rel_dates$V2 <- gsub("(?:Released: )", "", rel_dates$V2)
+rel_dates$V2 <- gsub(".{4}$", "", rel_dates$V2)
+
+# Converts textual dates to date type object
+rel_dates$V2 <- lubridate::parse_date_time(
+  rel_dates$V2, orders = "mdy") %>%
+  lubridate::as_date()
+
+# Check results to ensure they look as expected
+print(rel_dates)
+```
+
+Now our release dates are in a more workable format, and are ready to be merged
+in with the rest of the data. 
+
+```{r date-combine}
 
 ```
 
