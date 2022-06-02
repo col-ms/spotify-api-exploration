@@ -176,7 +176,7 @@ rel_dates$V2 <- lubridate::parse_date_time(
   lubridate::as_date()
 
 # Check results to ensure they look as expected
-print(rel_dates)
+rel_dates
 ```
 
 #### Prepping for Merge
