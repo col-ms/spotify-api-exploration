@@ -150,38 +150,10 @@ to note that the order in which albums are uploaded to Spotify is not
 always the same order that the albums were released. We can observe this
 by taking a look at the `album_release_date` variable.
 
-<<<<<<< HEAD
 ``` r
 library(tidyverse)
 library(plotly)
 ```
-=======
-    ## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
-
-    ## v ggplot2 3.3.5     v purrr   0.3.4
-    ## v tibble  3.1.6     v dplyr   1.0.7
-    ## v tidyr   1.1.4     v stringr 1.4.0
-    ## v readr   2.1.0     v forcats 0.5.1
-
-    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
-    ## x dplyr::filter() masks stats::filter()
-    ## x dplyr::lag()    masks stats::lag()
-
-    ## 
-    ## Attaching package: 'plotly'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     last_plot
-
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     filter
-
-    ## The following object is masked from 'package:graphics':
-    ## 
-    ##     layout
->>>>>>> 5576c13a667b33555246dccc2aa4aebde0dfd9ad
 
 ``` r
 mm_data %>% 
