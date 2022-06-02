@@ -151,7 +151,9 @@ rel_dates <- matrix(
 
 # Filter out any works that aren't hosted on Spotify
 rel_dates <- rel_dates %>% filter(
-  V1 %in% (unique(mm_data$album_name) %>% gsub("( \\().*", "", .)))
+  V1 %>% tolower() %in% (unique(mm_data$album_name) %>% 
+                    gsub("( \\().*", "", .) %>%
+                    tolower()))
 
 # Cleaning date text
 rel_dates$V2 <- gsub("(?:Released: )", "", rel_dates$V2)
@@ -166,10 +168,73 @@ rel_dates$V2 <- lubridate::parse_date_time(
 print(rel_dates)
 ```
 
-Now our release dates are in a more workable format, and are ready to be merged
-in with the rest of the data. 
+Now our release dates are in a more workable format. However, before we merge
+the two datasets, let's first take one more look at the album names in our 
+main dataframe, `mm_data`. 
+
+```{r album-name-check}
+unique(mm_data$album_name)
+```
+
+We see from this readout that many albums contain multiple editions, such as
+Deluxe releases, remasters, or commentary bonuses. To prevent our analysis from
+being biased towards those repeated works, we should selectively filter out 
+albums that are listed multiple times. Firstly, the commentary version of
+Blue Slide Park will be omitted. Next, for any album that has a deluxe release,
+we will keep only the deluxe release, dropping the original album from the
+dataset. Lastly, we will rename 
+*Best Day Ever (5th Anniversary Remastered Edition)* and
+*Macadelic (Remastered Edition)*. 
+This will help us when merging the datasets.
+
+```{r pre-merge-cleaning}
+# Shortening 'Best Day Ever' album name for merging
+mm_data$album_name[
+  mm_data$album_name == 
+  "Best Day Ever (5th Anniversary Remastered Edition)"] = "Best Day Ever"
+
+# Dropping '(Remastered Edition)' from Macadelic
+mm_data$album_name[
+  mm_data$album_name == 
+  "Macadelic (Remastered Edition)"] = "Macadelic"
+
+# Drop any non-deluxe editions of albums that have deluxe editions
+# Note that Blue Slide Park's additional versions were also dropped
+# Live From London was dropped as it only included already present songs
+mm_data <- filter(mm_data, !(album_name %in% c(
+  "Circles", 
+  "Watching Movies with the Sound Off", 
+  "K.I.D.S.",
+  "Mac Miller : Live From London (With The Internet)",
+  "Blue Slide Park (Commentary Version)",
+  "Blue Slide Park (Edited Version)")))
+```
+
+Now that our extra versions have been dropped from the data, we can finally
+merge our two datasets to attach the accurate release dates.
 
 ```{r date-combine}
+# Adding " (Deluxe)" onto album names in true release date set for merging
+for(i in c(2, 6, 8)){
+  if(i == 2){
+    rel_dates$V1[i] = str_c(rel_dates$V1[i], " (Deluxe Edition)")}
+  else
+    rel_dates$V1[i] = str_c(rel_dates$V1[i], " (Deluxe)")}
 
+# Adjusting Capitalization of "Live from Space" to match mm_data$album_name
+rel_dates$V1[rel_dates$V1 == "Live from Space"] = "Live From Space"
+
+# Performing the merge of the two datasets
+mm_data <- left_join(mm_data, rel_dates,
+                     by = c("album_name" = "V1"))
+mm_data <- mm_data %>% rename("true_rel_date" = "V2")
+```
+
+With the merge complete, let's take a look at the differences between the
+original `album_release_date` column and our new `true_rel_date` column.
+
+```{r rel-date-comp}
+select(mm_data, album_release_date, album_name, true_rel_date) %>%
+  unique()
 ```
 
