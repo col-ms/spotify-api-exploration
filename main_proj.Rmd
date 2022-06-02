@@ -89,7 +89,7 @@ the order in which albums are uploaded to Spotify is not always the same order
 that the albums were released. We can observe this by taking a look at the
 `album_release_date` variable.
 
-```{r libs, echo = F}
+```{r libs, message = F}
 library(tidyverse)
 library(plotly)
 ```
