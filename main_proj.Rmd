@@ -2,8 +2,16 @@
 title: "Exploring Mac Miller's Discography with Spotify API"
 author: "Collin Smith"
 date: '2022-05-19'
-output: github_document
+output: 
+  github_document:
+    toc: true
+    toc_depth: 4
 ---
+
+```{r chunk-setup-opts}
+knitr::opts_chunk$set(results = 'asis')
+```
+
 
 ### Welcome!
 
@@ -82,6 +90,9 @@ dim(mm_data)
 
 Excellent! The returned dataframe contains ``r dim(mm_data)[1]`` observations,
 or in this case songs, and each observation has ``r dim(mm_data)[2]`` variables.
+
+### Checking the Data
+
 We can see from the `unique(mm_data$album_name)` function that the albums are
 listed in order of upload date, with Faces being the most recent album added
 to Mac's Spotify page. While this may seem handy, it is important to note that
@@ -107,6 +118,8 @@ that Faces was actually released as a mixtape back in 2014, much earlier than
 the variable from Spotify's data would suggest. Since this project involves 
 analyzing how Mac's music changed throughout the duration of his career, it is
 important to have accurate ordering of dates associated with the albums.
+
+#### Webscraping
 
 To remedy this, we can use some quick web scraping to pull the release dates 
 from the wiki page and amend the data.
@@ -139,6 +152,8 @@ Let's check out what our scraping resulted in:
 head(rel_dates, 20)
 ```
 
+#### Cleaning the scraped data
+
 While that looks pretty good, you can see that the album titles are listed
 twice, and the release dates could be formatted a little nicer. Let's fix that
 up to a nicer format.
@@ -167,6 +182,8 @@ rel_dates$V2 <- lubridate::parse_date_time(
 # Check results to ensure they look as expected
 print(rel_dates)
 ```
+
+#### Prepping for Merge
 
 Now our release dates are in a more workable format. However, before we merge
 the two datasets, let's first take one more look at the album names in our 
@@ -208,12 +225,7 @@ mm_data <- filter(mm_data, !(album_name %in% c(
   "Mac Miller : Live From London (With The Internet)",
   "Blue Slide Park (Commentary Version)",
   "Blue Slide Park (Edited Version)")))
-```
 
-Now that our extra versions have been dropped from the data, we can finally
-merge our two datasets to attach the accurate release dates.
-
-```{r date-combine}
 # Adding " (Deluxe)" onto album names in true release date set for merging
 for(i in c(2, 6, 8)){
   if(i == 2){
@@ -223,7 +235,14 @@ for(i in c(2, 6, 8)){
 
 # Adjusting Capitalization of "Live from Space" to match mm_data$album_name
 rel_dates$V1[rel_dates$V1 == "Live from Space"] = "Live From Space"
+```
 
+#### Merging the Data
+
+Now that our extra versions have been dropped from the data, we can finally
+merge our two datasets to attach the accurate release dates.
+
+```{r date-combine}
 # Performing the merge of the two datasets
 mm_data <- left_join(mm_data, rel_dates,
                      by = c("album_name" = "V1"))
@@ -235,6 +254,6 @@ original `album_release_date` column and our new `true_rel_date` column.
 
 ```{r rel-date-comp}
 select(mm_data, album_release_date, album_name, true_rel_date) %>%
-  unique()
+  unique() %>% knitr::kable()
 ```
 
