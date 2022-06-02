@@ -276,21 +276,22 @@ rel_dates$V2 <- lubridate::parse_date_time(
   lubridate::as_date()
 
 # Check results to ensure they look as expected
-print(rel_dates)
+rel_dates
 ```
 
-    ##                                    V1         V2
-    ## 1                     Blue Slide Park 2011-11-08
-    ## 2  Watching Movies with the Sound Off 2013-06-18
-    ## 3                            GO:OD AM 2015-09-18
-    ## 4                 The Divine Feminine 2016-09-16
-    ## 5                            Swimming 2018-08-03
-    ## 6                             Circles 2020-01-17
-    ## 7                     Live from Space 2013-12-17
-    ## 8                            K.I.D.S. 2010-08-13
-    ## 9                       Best Day Ever 2011-03-11
-    ## 10                          Macadelic 2012-03-23
-    ## 11                              Faces 2014-05-11
+| V1                                 | V2         |
+|:-----------------------------------|:-----------|
+| Blue Slide Park                    | 2011-11-08 |
+| Watching Movies with the Sound Off | 2013-06-18 |
+| <GO:OD> AM                         | 2015-09-18 |
+| The Divine Feminine                | 2016-09-16 |
+| Swimming                           | 2018-08-03 |
+| Circles                            | 2020-01-17 |
+| Live from Space                    | 2013-12-17 |
+| K.I.D.S.                           | 2010-08-13 |
+| Best Day Ever                      | 2011-03-11 |
+| Macadelic                          | 2012-03-23 |
+| Faces                              | 2014-05-11 |
 
 #### Prepping for Merge
 
