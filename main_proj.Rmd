@@ -5,13 +5,10 @@ date: '2022-05-19'
 output: 
   github_document:
     toc: true
+    toc_float: true
     toc_depth: 4
+    df_print: "kable"
 ---
-
-```{r chunk-setup-opts}
-knitr::opts_chunk$set(results = 'asis')
-```
-
 
 ### Welcome!
 
@@ -254,6 +251,6 @@ original `album_release_date` column and our new `true_rel_date` column.
 
 ```{r rel-date-comp}
 select(mm_data, album_release_date, album_name, true_rel_date) %>%
-  unique() %>% knitr::kable()
+  unique()
 ```
 
