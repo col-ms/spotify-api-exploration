@@ -13,10 +13,6 @@ Collin Smith
     -   [Prepping for Merge](#prepping-for-merge)
     -   [Merging the Data](#merging-the-data)
 
-``` r
-knitr::opts_chunk$set(results = 'asis')
-```
-
 ### Welcome!
 
 Hello, and welcome to my very first Markdown publication. I am still
@@ -86,74 +82,74 @@ quick glance at the returned dataframe.
 colnames(mm_data)
 ```
 
-\[1\] “artist_name” “artist_id”  
-\[3\] “album_id” “album_type”  
-\[5\] “album_images” “album_release_date”  
-\[7\] “album_release_year” “album_release_date_precision” \[9\]
-“danceability” “energy”  
-\[11\] “key” “loudness”  
-\[13\] “mode” “speechiness”  
-\[15\] “acousticness” “instrumentalness”  
-\[17\] “liveness” “valence”  
-\[19\] “tempo” “track_id”  
-\[21\] “analysis_url” “time_signature”  
-\[23\] “artists” “available_markets”  
-\[25\] “disc_number” “duration_ms”  
-\[27\] “explicit” “track_href”  
-\[29\] “is_local” “track_name”  
-\[31\] “track_preview_url” “track_number”  
-\[33\] “type” “track_uri”  
-\[35\] “external_urls.spotify” “album_name”  
-\[37\] “key_name” “mode_name”  
-\[39\] “key_mode”
+    ##  [1] "artist_name"                  "artist_id"                   
+    ##  [3] "album_id"                     "album_type"                  
+    ##  [5] "album_images"                 "album_release_date"          
+    ##  [7] "album_release_year"           "album_release_date_precision"
+    ##  [9] "danceability"                 "energy"                      
+    ## [11] "key"                          "loudness"                    
+    ## [13] "mode"                         "speechiness"                 
+    ## [15] "acousticness"                 "instrumentalness"            
+    ## [17] "liveness"                     "valence"                     
+    ## [19] "tempo"                        "track_id"                    
+    ## [21] "analysis_url"                 "time_signature"              
+    ## [23] "artists"                      "available_markets"           
+    ## [25] "disc_number"                  "duration_ms"                 
+    ## [27] "explicit"                     "track_href"                  
+    ## [29] "is_local"                     "track_name"                  
+    ## [31] "track_preview_url"            "track_number"                
+    ## [33] "type"                         "track_uri"                   
+    ## [35] "external_urls.spotify"        "album_name"                  
+    ## [37] "key_name"                     "mode_name"                   
+    ## [39] "key_mode"
 
 ``` r
 unique(mm_data$album_name)
 ```
 
-\[1\] “Faces”  
-\[2\] “Circles (Deluxe)”  
-\[3\] “Circles”  
-\[4\] “Swimming”  
-\[5\] “The Divine Feminine”  
-\[6\] “Best Day Ever (5th Anniversary Remastered Edition)” \[7\]
-“<GO:OD> AM”  
-\[8\] “Live From Space”  
-\[9\] “Watching Movies with the Sound Off (Deluxe Edition)” \[10\]
-“Watching Movies with the Sound Off”  
-\[11\] “Mac Miller : Live From London (With The Internet)”  
-\[12\] “Macadelic (Remastered Edition)”  
-\[13\] “Blue Slide Park (Commentary Version)”  
-\[14\] “Blue Slide Park (Edited Version)”  
-\[15\] “Blue Slide Park”  
-\[16\] “K.I.D.S. (Deluxe)”  
-\[17\] “K.I.D.S.”
+    ##  [1] "Faces"                                              
+    ##  [2] "Circles (Deluxe)"                                   
+    ##  [3] "Circles"                                            
+    ##  [4] "Swimming"                                           
+    ##  [5] "The Divine Feminine"                                
+    ##  [6] "Best Day Ever (5th Anniversary Remastered Edition)" 
+    ##  [7] "GO:OD AM"                                           
+    ##  [8] "Live From Space"                                    
+    ##  [9] "Watching Movies with the Sound Off (Deluxe Edition)"
+    ## [10] "Watching Movies with the Sound Off"                 
+    ## [11] "Mac Miller : Live From London (With The Internet)"  
+    ## [12] "Macadelic (Remastered Edition)"                     
+    ## [13] "Blue Slide Park (Commentary Version)"               
+    ## [14] "Blue Slide Park (Edited Version)"                   
+    ## [15] "Blue Slide Park"                                    
+    ## [16] "K.I.D.S. (Deluxe)"                                  
+    ## [17] "K.I.D.S."
 
 ``` r
 head(mm_data$track_name, 15)
 ```
 
-\[1\] “Inside Outside”  
-\[2\] “Here We Go”  
-\[3\] “Friends (feat. ScHoolboy Q)”  
-\[4\] “Angel Dust”  
-\[5\] “Malibu”  
-\[6\] “What Do You Do (feat. Sir Michael Rocks)” \[7\] “It Just Doesn’t
-Matter”  
-\[8\] “Therapy”  
-\[9\] “Polo Jeans (feat. Earl Sweatshirt)”  
-\[10\] “Happy Birthday”  
-\[11\] “Wedding”  
-\[12\] “Funeral”  
-\[13\] “Diablo”  
-\[14\] “Ave Maria”  
-\[15\] “55”
+    ##  [1] "Inside Outside"                          
+    ##  [2] "Here We Go"                              
+    ##  [3] "Friends (feat. ScHoolboy Q)"             
+    ##  [4] "Angel Dust"                              
+    ##  [5] "Malibu"                                  
+    ##  [6] "What Do You Do (feat. Sir Michael Rocks)"
+    ##  [7] "It Just Doesn’t Matter"                  
+    ##  [8] "Therapy"                                 
+    ##  [9] "Polo Jeans (feat. Earl Sweatshirt)"      
+    ## [10] "Happy Birthday"                          
+    ## [11] "Wedding"                                 
+    ## [12] "Funeral"                                 
+    ## [13] "Diablo"                                  
+    ## [14] "Ave Maria"                               
+    ## [15] "55"
 
 ``` r
 dim(mm_data)
 ```
 
-\[1\] 305 39
+    ## [1] 305  39
 
 Excellent! The returned dataframe contains `305` observations, or in
 this case songs, and each observation has `39` variables.
@@ -178,18 +174,25 @@ mm_data %>%
   distinct()
 ```
 
-                                            album_name album_release_date
-
-1 Faces 2021-10-15 2 Circles (Deluxe) 2020-03-19 3 Circles 2020-01-17 4
-Swimming 2018-08-03 5 The Divine Feminine 2016-09-16 6 Best Day Ever
-(5th Anniversary Remastered Edition) 2016-06-03 7 <GO:OD> AM 2015-09-18
-8 Live From Space 2013-12-17 9 Watching Movies with the Sound Off
-(Deluxe Edition) 2013-06-18 10 Watching Movies with the Sound Off
-2013-06-18 11 Mac Miller : Live From London (With The Internet)
-2013-01-01 12 Macadelic (Remastered Edition) 2012-03-23 13 Blue Slide
-Park (Commentary Version) 2011-11-15 14 Blue Slide Park (Edited Version)
-2011-11-15 15 Blue Slide Park 2011-11-08 16 K.I.D.S. (Deluxe) 2010-08-13
-17 K.I.D.S. 2010-08-13
+| album_name                                          | album_release_date |
+|:----------------------------------------------------|:-------------------|
+| Faces                                               | 2021-10-15         |
+| Circles (Deluxe)                                    | 2020-03-19         |
+| Circles                                             | 2020-01-17         |
+| Swimming                                            | 2018-08-03         |
+| The Divine Feminine                                 | 2016-09-16         |
+| Best Day Ever (5th Anniversary Remastered Edition)  | 2016-06-03         |
+| <GO:OD> AM                                          | 2015-09-18         |
+| Live From Space                                     | 2013-12-17         |
+| Watching Movies with the Sound Off (Deluxe Edition) | 2013-06-18         |
+| Watching Movies with the Sound Off                  | 2013-06-18         |
+| Mac Miller : Live From London (With The Internet)   | 2013-01-01         |
+| Macadelic (Remastered Edition)                      | 2012-03-23         |
+| Blue Slide Park (Commentary Version)                | 2011-11-15         |
+| Blue Slide Park (Edited Version)                    | 2011-11-15         |
+| Blue Slide Park                                     | 2011-11-08         |
+| K.I.D.S. (Deluxe)                                   | 2010-08-13         |
+| K.I.D.S.                                            | 2010-08-13         |
 
 This readout implies that Faces is the most recent album to release.
 However, by checking Mac’s
@@ -234,17 +237,16 @@ Let’s check out what our scraping resulted in:
 head(rel_dates, 20)
 ```
 
-\[1\] “Blue Slide Park” “Blue Slide Park”  
-\[3\] “Released: November 8, 2011\[16\]” “Watching Movies with the Sound
-Off” \[5\] “Watching Movies with the Sound Off” “Released: June 18,
-2013\[20\]”  
-\[7\] “<GO:OD> AM” “<GO:OD> AM”  
-\[9\] “Released: September 18, 2015\[22\]” “The Divine Feminine”  
-\[11\] “The Divine Feminine” “Released: September 16, 2016\[24\]”  
-\[13\] “Swimming” “Swimming”  
-\[15\] “Released: August 3, 2018\[26\]” “Circles”  
-\[17\] “Circles” “Released: January 17, 2020\[31\]”  
-\[19\] “Live from Space” “Live from Space”
+    ##  [1] "Blue Slide Park"                    "Blue Slide Park"                   
+    ##  [3] "Released: November 8, 2011[16]"     "Watching Movies with the Sound Off"
+    ##  [5] "Watching Movies with the Sound Off" "Released: June 18, 2013[20]"       
+    ##  [7] "GO:OD AM"                           "GO:OD AM"                          
+    ##  [9] "Released: September 18, 2015[22]"   "The Divine Feminine"               
+    ## [11] "The Divine Feminine"                "Released: September 16, 2016[24]"  
+    ## [13] "Swimming"                           "Swimming"                          
+    ## [15] "Released: August 3, 2018[26]"       "Circles"                           
+    ## [17] "Circles"                            "Released: January 17, 2020[31]"    
+    ## [19] "Live from Space"                    "Live from Space"
 
 #### Cleaning the scraped data
 
@@ -277,13 +279,18 @@ rel_dates$V2 <- lubridate::parse_date_time(
 print(rel_dates)
 ```
 
-                                   V1         V2
-
-1 Blue Slide Park 2011-11-08 2 Watching Movies with the Sound Off
-2013-06-18 3 <GO:OD> AM 2015-09-18 4 The Divine Feminine 2016-09-16 5
-Swimming 2018-08-03 6 Circles 2020-01-17 7 Live from Space 2013-12-17 8
-K.I.D.S. 2010-08-13 9 Best Day Ever 2011-03-11 10 Macadelic 2012-03-23
-11 Faces 2014-05-11
+    ##                                    V1         V2
+    ## 1                     Blue Slide Park 2011-11-08
+    ## 2  Watching Movies with the Sound Off 2013-06-18
+    ## 3                            GO:OD AM 2015-09-18
+    ## 4                 The Divine Feminine 2016-09-16
+    ## 5                            Swimming 2018-08-03
+    ## 6                             Circles 2020-01-17
+    ## 7                     Live from Space 2013-12-17
+    ## 8                            K.I.D.S. 2010-08-13
+    ## 9                       Best Day Ever 2011-03-11
+    ## 10                          Macadelic 2012-03-23
+    ## 11                              Faces 2014-05-11
 
 #### Prepping for Merge
 
@@ -295,23 +302,23 @@ names in our main dataframe, `mm_data`.
 unique(mm_data$album_name)
 ```
 
-\[1\] “Faces”  
-\[2\] “Circles (Deluxe)”  
-\[3\] “Circles”  
-\[4\] “Swimming”  
-\[5\] “The Divine Feminine”  
-\[6\] “Best Day Ever (5th Anniversary Remastered Edition)” \[7\]
-“<GO:OD> AM”  
-\[8\] “Live From Space”  
-\[9\] “Watching Movies with the Sound Off (Deluxe Edition)” \[10\]
-“Watching Movies with the Sound Off”  
-\[11\] “Mac Miller : Live From London (With The Internet)”  
-\[12\] “Macadelic (Remastered Edition)”  
-\[13\] “Blue Slide Park (Commentary Version)”  
-\[14\] “Blue Slide Park (Edited Version)”  
-\[15\] “Blue Slide Park”  
-\[16\] “K.I.D.S. (Deluxe)”  
-\[17\] “K.I.D.S.”
+    ##  [1] "Faces"                                              
+    ##  [2] "Circles (Deluxe)"                                   
+    ##  [3] "Circles"                                            
+    ##  [4] "Swimming"                                           
+    ##  [5] "The Divine Feminine"                                
+    ##  [6] "Best Day Ever (5th Anniversary Remastered Edition)" 
+    ##  [7] "GO:OD AM"                                           
+    ##  [8] "Live From Space"                                    
+    ##  [9] "Watching Movies with the Sound Off (Deluxe Edition)"
+    ## [10] "Watching Movies with the Sound Off"                 
+    ## [11] "Mac Miller : Live From London (With The Internet)"  
+    ## [12] "Macadelic (Remastered Edition)"                     
+    ## [13] "Blue Slide Park (Commentary Version)"               
+    ## [14] "Blue Slide Park (Edited Version)"                   
+    ## [15] "Blue Slide Park"                                    
+    ## [16] "K.I.D.S. (Deluxe)"                                  
+    ## [17] "K.I.D.S."
 
 We see from this readout that many albums contain multiple editions,
 such as Deluxe releases, remasters, or commentary bonuses. To prevent
@@ -374,7 +381,7 @@ column.
 
 ``` r
 select(mm_data, album_release_date, album_name, true_rel_date) %>%
-  unique() %>% knitr::kable()
+  unique()
 ```
 
 |     | album_release_date | album_name                                          | true_rel_date |
