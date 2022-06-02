@@ -3,6 +3,8 @@ Exploring Mac Miller’s Discography with Spotify API
 Collin Smith
 2022-05-19
 
+### Welcome!
+
 Hello, and welcome to my very first Markdown publication. I am still
 relatively new to R, with about 2 years of exposure and experience with
 the language. The vast majority of my time spent with R has been for
@@ -44,6 +46,8 @@ Sys.setenv(SPOTIFY_CLIENT_ID = 'your client id')
 Sys.setenv(SPOTIFY_CLIENT_SECRET = 'your client secret')
 access_token <- get_spotify_access_token()
 ```
+
+### Gathering the Data
 
 Now that you are authenticated with the API, we can begin using the
 **spotifyr** package’s functions to retrieve information. In this
@@ -112,18 +116,181 @@ unique(mm_data$album_name)
     ## [17] "K.I.D.S."
 
 ``` r
-head(mm_data$track_name)
+head(mm_data$track_name, 15)
 ```
 
-    ## [1] "Inside Outside"                          
-    ## [2] "Here We Go"                              
-    ## [3] "Friends (feat. ScHoolboy Q)"             
-    ## [4] "Angel Dust"                              
-    ## [5] "Malibu"                                  
-    ## [6] "What Do You Do (feat. Sir Michael Rocks)"
+    ##  [1] "Inside Outside"                          
+    ##  [2] "Here We Go"                              
+    ##  [3] "Friends (feat. ScHoolboy Q)"             
+    ##  [4] "Angel Dust"                              
+    ##  [5] "Malibu"                                  
+    ##  [6] "What Do You Do (feat. Sir Michael Rocks)"
+    ##  [7] "It Just Doesn’t Matter"                  
+    ##  [8] "Therapy"                                 
+    ##  [9] "Polo Jeans (feat. Earl Sweatshirt)"      
+    ## [10] "Happy Birthday"                          
+    ## [11] "Wedding"                                 
+    ## [12] "Funeral"                                 
+    ## [13] "Diablo"                                  
+    ## [14] "Ave Maria"                               
+    ## [15] "55"
 
 ``` r
 dim(mm_data)
 ```
 
     ## [1] 305  39
+
+Excellent! The returned dataframe contains `305` observations, or in
+this case songs, and each observation has `39` variables. We can see
+from the `unique(mm_data$album_name)` function that the albums are
+listed in order of upload date, with Faces being the most recent album
+added to Mac’s Spotify page. While this may seem handy, it is important
+to note that the order in which albums are uploaded to Spotify is not
+always the same order that the albums were released. We can observe this
+by taking a look at the `album_release_date` variable.
+
+    ## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
+
+    ## v ggplot2 3.3.5     v purrr   0.3.4
+    ## v tibble  3.1.6     v dplyr   1.0.7
+    ## v tidyr   1.1.4     v stringr 1.4.0
+    ## v readr   2.1.0     v forcats 0.5.1
+
+    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+    ## x dplyr::filter() masks stats::filter()
+    ## x dplyr::lag()    masks stats::lag()
+
+    ## 
+    ## Attaching package: 'plotly'
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     last_plot
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     filter
+
+    ## The following object is masked from 'package:graphics':
+    ## 
+    ##     layout
+
+``` r
+mm_data %>% 
+  select(album_name, album_release_date) %>%
+  distinct()
+```
+
+    ##                                             album_name album_release_date
+    ## 1                                                Faces         2021-10-15
+    ## 2                                     Circles (Deluxe)         2020-03-19
+    ## 3                                              Circles         2020-01-17
+    ## 4                                             Swimming         2018-08-03
+    ## 5                                  The Divine Feminine         2016-09-16
+    ## 6   Best Day Ever (5th Anniversary Remastered Edition)         2016-06-03
+    ## 7                                             GO:OD AM         2015-09-18
+    ## 8                                      Live From Space         2013-12-17
+    ## 9  Watching Movies with the Sound Off (Deluxe Edition)         2013-06-18
+    ## 10                  Watching Movies with the Sound Off         2013-06-18
+    ## 11   Mac Miller : Live From London (With The Internet)         2013-01-01
+    ## 12                      Macadelic (Remastered Edition)         2012-03-23
+    ## 13                Blue Slide Park (Commentary Version)         2011-11-15
+    ## 14                    Blue Slide Park (Edited Version)         2011-11-15
+    ## 15                                     Blue Slide Park         2011-11-08
+    ## 16                                   K.I.D.S. (Deluxe)         2010-08-13
+    ## 17                                            K.I.D.S.         2010-08-13
+
+This readout implies that Faces is the most recent album to release.
+However, by checking Mac’s
+[discography](https://en.wikipedia.org/wiki/Mac_Miller_discography), we
+can see that Faces was actually released as a mixtape back in 2014, much
+earlier than the variable from Spotify’s data would suggest. Since this
+project involves analyzing how Mac’s music changed throughout the
+duration of his career, it is important to have accurate ordering of
+dates associated with the albums.
+
+To remedy this, we can use some quick web scraping to pull the release
+dates from the wiki page and amend the data.
+
+``` r
+# run install.packages('rvest') if you don't have this package already
+library(rvest)
+url <- "https://en.wikipedia.org/wiki/Mac_Miller_discography"
+wp <- read_html(url)
+rel_dates <- html_nodes(
+  wp, "th i , .plainrowheaders th+ td li:nth-child(1) , th i a") %>%
+  html_text()
+```
+
+Now, the above code may look a little intimidating if you are new to
+webscraping. That’s okay, it looks much scarier than it really is. The
+`read_html()` function simply reads the page’s html code and stores it
+as a list in your R environment. Then, we need to tell R what parts of
+the webpage we want extracted. To do this, I used the
+[SelectorGadget](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb?hl=en)
+extension for Chrome. Using the tool makes webscraping very simple, you
+just highlight the elements you wish to capture and the tool will give
+you the CSS selector for it. That is how the arguments you see in the
+`html_nodes()` function were found. Once you’ve identified the nodes,
+pass the results to the `html_text()` function and voila! You know have
+text from a website stored right in your R environment.
+
+Let’s check out what our scraping resulted in:
+
+``` r
+head(rel_dates, 20)
+```
+
+    ##  [1] "Blue Slide Park"                    "Blue Slide Park"                   
+    ##  [3] "Released: November 8, 2011[16]"     "Watching Movies with the Sound Off"
+    ##  [5] "Watching Movies with the Sound Off" "Released: June 18, 2013[20]"       
+    ##  [7] "GO:OD AM"                           "GO:OD AM"                          
+    ##  [9] "Released: September 18, 2015[22]"   "The Divine Feminine"               
+    ## [11] "The Divine Feminine"                "Released: September 16, 2016[24]"  
+    ## [13] "Swimming"                           "Swimming"                          
+    ## [15] "Released: August 3, 2018[26]"       "Circles"                           
+    ## [17] "Circles"                            "Released: January 17, 2020[31]"    
+    ## [19] "Live from Space"                    "Live from Space"
+
+While that looks pretty good, you can see that the album titles are
+listed twice, and the release dates could be formatted a little nicer.
+Let’s fix that up to a nicer format.
+
+``` r
+# Remove duplicates and format into dataframe for manipulation
+rel_dates <- matrix(
+  unique(rel_dates), ncol = 2, byrow = T) %>%
+  as.data.frame()
+
+# Filter out any works that aren't hosted on Spotify
+rel_dates <- rel_dates %>% filter(
+  V1 %in% (unique(mm_data$album_name) %>% gsub("( \\().*", "", .)))
+
+# Cleaning date text
+rel_dates$V2 <- gsub("(?:Released: )", "", rel_dates$V2)
+rel_dates$V2 <- gsub(".{4}$", "", rel_dates$V2)
+
+# Converts textual dates to date type object
+rel_dates$V2 <- lubridate::parse_date_time(
+  rel_dates$V2, orders = "mdy") %>%
+  lubridate::as_date()
+
+# Check results to ensure they look as expected
+print(rel_dates)
+```
+
+    ##                                    V1         V2
+    ## 1                     Blue Slide Park 2011-11-08
+    ## 2  Watching Movies with the Sound Off 2013-06-18
+    ## 3                            GO:OD AM 2015-09-18
+    ## 4                 The Divine Feminine 2016-09-16
+    ## 5                            Swimming 2018-08-03
+    ## 6                             Circles 2020-01-17
+    ## 7                            K.I.D.S. 2010-08-13
+    ## 8                       Best Day Ever 2011-03-11
+    ## 9                           Macadelic 2012-03-23
+    ## 10                              Faces 2014-05-11
+
+Now our release dates are in a more workable format, and are ready to be
+merged in with the rest of the data.
