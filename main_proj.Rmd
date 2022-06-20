@@ -253,3 +253,32 @@ select(mm_data, album_release_date, album_name, true_rel_date) %>%
   unique()
 ```
 
+Excellent! Now that we have each album's true release date, we can go ahead and
+drop the old variable `album_release_date` and rename our new variable to take
+its place.
+
+```{r rel-date-swap}
+mm_data <- select(mm_data, -album_release_date) %>% 
+  rename(album_release_date = true_rel_date)
+```
+
+### Filtering the Data
+
+Now that our release date issues have been solved, let's take a look at which
+variables we'd like to keep, and which ones we can exclude moving forward.
+
+```{r df-name-list}
+print(names(mm_data))
+```
+
+As we can see, there are quite a few variables in the set. To get an idea of
+what each variable holds, we can use *tidyverse*'s `glimpse()` function.
+
+```{r data-glimpse}
+glimpse(mm_data)
+```
+
+Wow! That's a lot of info. To make things a little simpler, we can refer to
+[Spotify's API documentation](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features)
+to get a better idea of what these variables represent. Some variables are 
+rather self-explanatory, such as `artist_name`, `track_name`, `album_name`, and
