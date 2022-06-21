@@ -448,12 +448,39 @@ and frequencies of measures. This will give a good overview of our data at a
 high level before we delve into specifics and multivariate interactions.
 
 ```{r album-track-counts}
+album_palette = c(
+  "K.I.D.S. (Deluxe)" = "#387228",
+  "Best Day Ever" = "#C315AA",
+  "Blue Slide Park" = "#3540F2",
+  "Macadelic" = "#767092",
+  "Watching Movies with the Sound Off (Deluxe Edition)" = "#DA252A",
+  "Live From Space" = "#FE675C",
+  "Faces" = "#FDBB1E",
+  "GO:OD AM" = "#A2A2A2",
+  "The Divine Feminine" = "#DDC1BE",
+  "Swimming" = "#668099",
+  "Circles (Deluxe)" = "#464646")
+
 df %>% 
-  group_by(album_name) %>%
+  group_by(album_name, album_release_date) %>%
   tally() %>%
-  arrange(-n) %>%
-  ggplot(aes(x = album_name, y = n)) +
-  geom_col() +
-  coord_flip()
+  ggplot(
+    aes(x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date), 
+        y = n)) +
+  geom_col(aes(fill = album_name), color = "lightgrey") +
+  geom_text(aes(label = n), vjust = -0.2, size = 3.5) +
+  scale_y_continuous(limits = c(0, 26)) +
+  labs(x = "", 
+       y = "",
+       title = "Tracks Per Mac Miller Album",
+       subtitle = "Ordered by Release Date") +
+  ggthemes::theme_clean() +
+  scale_fill_manual(values = album_palette) +
+  theme(legend.position = "none")
 ```
 
+From this plot we can see that Mac's earlier albums tended to have a couple
+more songs than his later releases, with *Faces* being the outlier of the
+discography as a whole. This could partly be due to *Faces* originally being
+released as a mixtape rather than a formal album, so perhaps it did not go
+through the same revision processes that an album might see before release.
