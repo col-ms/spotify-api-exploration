@@ -270,39 +270,54 @@ Before we head into the next step in our analysis, let's first make sure that we
 don't have multiple entries of any tracks.
 
 ```{r dupe-check}
-df$track_name[duplicated(df$track_name)]
+mm_data$track_name[duplicated(mm_data$track_name)]
 ```
 
 Good thing we checked! 27 duplicate entries is no joke, so let's figure out how
 this happened. Familiarity with Spotify and Mac's library leads me to initially
-suspect that these tracks appear on both an "Explicit" and "Clean" versions of
+suspect that these tracks appear on both an explicit and clean versions of
 their respective albums. We can check this assumption rather quickly, so let's 
 do so.
 
 ```{r dupe-investigation}
-df %>% 
+mm_data %>% 
   filter(
-    track_name %in% (df$track_name[duplicated(df$track_name)])) %>%
+    track_name %in% (mm_data$track_name[duplicated(mm_data$track_name)])) %>%
   select(track_name, album_name, explicit) %>%
   arrange(album_name)
 ```
 
-As expected, it looks like the duplicate entries stem from "Clean" editions of
+As expected, it looks like the duplicate entries stem from clean editions of
 albums. To handle this, we can first double-check that aside from the clean
 albums, every album in the dataset contains at least one explicit song. If so,
 then we can group the observations by album and simply drop any album that
 contains no explicit tracks.
 
 ```{r explicit-check}
-df %>%
-  group_by(album_name, track_name) %>%
-  count(explicit == TRUE)
+# note we use album_id here because it is unique for explicit and clean versions
+mm_data %>%
+  group_by(album_id, album_name) %>%
+  count(explicit == TRUE) %>%
+  arrange(album_name)
 ```
+
+We can see here that the only albums with two different entries for **album_id**
+are *GO:OD AM* and *The Divine Feminine*. These entries represent the explicit
+and clean editions of the albums. To handle this, we can simply filter out
+any entry that matches the **album_id** value of the clean editions of these
+albums.
+
+```{r}
+mm_data <- mm_data %>%
+  filter(!album_id %in% c("6lEUoXk2C9IpUWPd4caiNE", "4gtXD5SL0yysd1eRIrDpnZ"))
+```
+
 
 #### Variable Selection
 
-Now that our release date issues have been solved, let's take a look at which
-variables we'd like to keep, and which ones we can exclude moving forward.
+Now that our release date and duplicate entry issues have been solved, let's 
+take a look at which variables we'd like to keep, and which ones we can exclude 
+moving forward.
 
 ```{r df-name-list}
 print(names(mm_data))
@@ -366,43 +381,6 @@ df <- mm_data %>% select(
 # quickly formatting key, mode, and time signature as factors
 df <- df %>% mutate(across(c(key, mode, time_signature), as.factor))
 ```
-
-#### DELETE LATER DO NOT KEEP
-
-Before we head into the next step in our analysis, let's first make sure that we
-don't have multiple entries of any tracks.
-
-```{r dupe-check}
-df$track_name[duplicated(df$track_name)]
-```
-
-Good thing we checked! 27 duplicate entries is no joke, so let's figure out how
-this happened. Familiarity with Spotify and Mac's library leads me to initially
-suspect that these tracks appear on both an "Explicit" and "Clean" versions of
-their respective albums. We can check this assumption rather quickly, so let's 
-do so.
-
-```{r dupe-investigation}
-df %>% 
-  filter(
-    track_name %in% (df$track_name[duplicated(df$track_name)])) %>%
-  select(track_name, album_name, explicit) %>%
-  arrange(album_name)
-```
-
-As expected, it looks like the duplicate entries stem from "Clean" editions of
-albums. To handle this, we can first double-check that aside from the clean
-albums, every album in the dataset contains at least one explicit song. If so,
-then we can group the observations by album and simply drop any album that
-contains no explicit tracks.
-
-```{r explicit-check}
-df %>%
-  group_by(album_name, track_name) %>%
-  count(explicit == TRUE)
-```
-
-
 
 ### Exploratory Data Analysis (EDA)
 
