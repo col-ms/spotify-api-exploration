@@ -282,3 +282,53 @@ Wow! That's a lot of info. To make things a little simpler, we can refer to
 [Spotify's API documentation](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features)
 to get a better idea of what these variables represent. Some variables are 
 rather self-explanatory, such as `artist_name`, `track_name`, `album_name`, and
+`duration_ms`. For this analysis, we want to keep identifying information such
+as a tracks name, the album it came from, and the release date. The other
+variables we'll want to keep are measures about the songs sonic signature. These
+measures include `danceability`, `energy`, `loudness`, `speechiness`,
+`acousticness`, `instrumentalness`, `liveness`, and `valence`. These are metrics
+provided by Spotify that give quantitative measures of a track's audio
+characteristics. More information on these metrics and how they are derived can
+be found at [Spotify's API documentation](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features).
+Other variables we'll want to keep are `key`, `mode`, `tempo`, `time_signature`,
+`duration_ms`, and `explicit`. These variables provide more information about
+the composition of the song.
+
+Now that we've identified the variables we want to keep in our working data, we
+can go ahead and create a filtered version of the full data to move forward
+with. We can also take this opportunity to reorder our variables into more 
+organized groups.
+
+```{r select-variables}
+df <- mm_data %>% select(
+  # identifying information
+  track_name,
+  artist_name,
+  album_name,
+  album_release_date,
+  # spotify provided quantitative measures
+  acousticness,
+  danceability,
+  energy,
+  instrumentalness,
+  liveness,
+  loudness,
+  speechiness,
+  valence,
+  # composition information
+  duration_ms,
+  explicit,
+  key,
+  mode,
+  tempo,
+  time_signature
+)
+```
+
+### Exploratory Data Analysis (EDA)
+
+With the data sorted and filtered to only include relevant variables, we are
+now ready to begin using statistical summaries and creating visualizations
+to glean insights from. We will be exploring the data to discover patterns, 
+identify anomalies (or outliers), and to make some informed observations that
+will help us to better understand the dataset.
