@@ -264,6 +264,43 @@ mm_data <- select(mm_data, -album_release_date) %>%
 
 ### Filtering the Data
 
+#### Handling Duplicates
+
+Before we head into the next step in our analysis, let's first make sure that we
+don't have multiple entries of any tracks.
+
+```{r dupe-check}
+df$track_name[duplicated(df$track_name)]
+```
+
+Good thing we checked! 27 duplicate entries is no joke, so let's figure out how
+this happened. Familiarity with Spotify and Mac's library leads me to initially
+suspect that these tracks appear on both an "Explicit" and "Clean" versions of
+their respective albums. We can check this assumption rather quickly, so let's 
+do so.
+
+```{r dupe-investigation}
+df %>% 
+  filter(
+    track_name %in% (df$track_name[duplicated(df$track_name)])) %>%
+  select(track_name, album_name, explicit) %>%
+  arrange(album_name)
+```
+
+As expected, it looks like the duplicate entries stem from "Clean" editions of
+albums. To handle this, we can first double-check that aside from the clean
+albums, every album in the dataset contains at least one explicit song. If so,
+then we can group the observations by album and simply drop any album that
+contains no explicit tracks.
+
+```{r explicit-check}
+df %>%
+  group_by(album_name, track_name) %>%
+  count(explicit == TRUE)
+```
+
+#### Variable Selection
+
 Now that our release date issues have been solved, let's take a look at which
 variables we'd like to keep, and which ones we can exclude moving forward.
 
@@ -325,6 +362,48 @@ df <- mm_data %>% select(
 )
 ```
 
+```{r format-cleaning}
+# quickly formatting key, mode, and time signature as factors
+df <- df %>% mutate(across(c(key, mode, time_signature), as.factor))
+```
+
+#### DELETE LATER DO NOT KEEP
+
+Before we head into the next step in our analysis, let's first make sure that we
+don't have multiple entries of any tracks.
+
+```{r dupe-check}
+df$track_name[duplicated(df$track_name)]
+```
+
+Good thing we checked! 27 duplicate entries is no joke, so let's figure out how
+this happened. Familiarity with Spotify and Mac's library leads me to initially
+suspect that these tracks appear on both an "Explicit" and "Clean" versions of
+their respective albums. We can check this assumption rather quickly, so let's 
+do so.
+
+```{r dupe-investigation}
+df %>% 
+  filter(
+    track_name %in% (df$track_name[duplicated(df$track_name)])) %>%
+  select(track_name, album_name, explicit) %>%
+  arrange(album_name)
+```
+
+As expected, it looks like the duplicate entries stem from "Clean" editions of
+albums. To handle this, we can first double-check that aside from the clean
+albums, every album in the dataset contains at least one explicit song. If so,
+then we can group the observations by album and simply drop any album that
+contains no explicit tracks.
+
+```{r explicit-check}
+df %>%
+  group_by(album_name, track_name) %>%
+  count(explicit == TRUE)
+```
+
+
+
 ### Exploratory Data Analysis (EDA)
 
 With the data sorted and filtered to only include relevant variables, we are
@@ -332,3 +411,71 @@ now ready to begin using statistical summaries and creating visualizations
 to glean insights from. We will be exploring the data to discover patterns, 
 identify anomalies (or outliers), and to make some informed observations that
 will help us to better understand the dataset.
+
+#### Statistical Summary
+
+We'll start our analysis by looking at a basic statistical summary of the
+quantitative variables in our dataset. We can easily find what variables to 
+include by using a `select()` statement.
+
+```{r stat-summ}
+df %>% 
+  select(where(is.numeric)) %>%
+  summary()
+```
+
+These values tell us some great cursory information about the data.
+
+Some observations:
++ **acousticness** has the widest range of all Spotify's metrics, but the mean
+and 3rd quartile suggest the max may be an anomaly
++ **danceability** and **energy** have relatively similar summaries, suggesting
+possible correlation between the two. Values tend to trend upwards, indicating
+the minimum value in both of these variables may be outliers (potentially even
+the same track? worth investigating)
++ **instrumentalness** doesn't contain any values > 0.5, Spotify's threshold 
+intended to represent instrumental tracks, as per their documentation linked
+above. This suggests the discography does not contain any purely instrumental
+tracks
++ **liveness** having a max of ``r max(df$liveness)`` suggests Spotify is 
+confident that at least one track was performed live (documentation lists 0.8
+as the likelihood threshold). This max is very far from the rest of the measures
+for liveness, indicating a likely outlier
++ **loudness**, measured in decibels (dB) also has a relatively wide range, 
+with all values < 0. Spotify lists typical range as falling between -60 and 0, 
+suggesting Mac's music trends towards the upper side of this traditional range
++ **speechiness** tends to be lower than Spotify's typical value range for rap
+music (0.33 - 0.66 as per documentation). This suggests Mac's tracks have more
+sections that do not contain vocals in them. Investigating this on a per-album
+basis could yield interesting findings
++ **valence** sees a wide range of values, with the mean and median falling just
+under the halfway point between the min and max. However, the 3rd quartile value
+tells us that the max value is likely an anomaly
++ **duration_ms** seems to hold a rather tight distribution for the most part, 
+with both the min and the max values seemingly pretty distant from the typical
+values in the variable
++ **tempo** holds some surprising values. The mean and median suggest that ~120
+is Mac's typical tempo, which is higher than the 
+[average hip-hop tempo range](https://www.izotope.com/en/learn/using-different-tempos-to-make-beats-for-different-genres.html).
+The linked source offers that typically, the higher the beats per minute (BPM),
+or tempo, the more energy and uplifting a track is. Knowing this, it would be 
+interesting to investigate the relationship between **tempo**, **energy**,
+**valence**, and **danceability**. I'd expect, at the very least, a weak 
+positive correlation between all those variables
+
+#### Univariate Visualizations
+
+This section will focus on some simple but import plots, mostly involving counts
+and frequencies of measures. This will give a good overview of our data at a 
+high level before we delve into specifics and multivariate interactions.
+
+```{r album-track-counts}
+df %>% 
+  group_by(album_name) %>%
+  tally() %>%
+  arrange(-n) %>%
+  ggplot(aes(x = album_name, y = n)) +
+  geom_col() +
+  coord_flip()
+```
+
