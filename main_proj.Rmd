@@ -3,10 +3,12 @@ title: "Exploring Mac Miller's Discography with Spotify API"
 author: "Collin Smith"
 date: '2022-05-19'
 output: 
-  github_document:
+  html_document:
     toc: true
     toc_depth: 4
     df_print: "kable"
+    code_folding: "show"
+    keep_md: true
 ---
 
 ### Welcome!
@@ -190,7 +192,7 @@ unique(mm_data$album_name)
 ```
 
 We see from this readout that many albums contain multiple editions, such as
-Deluxe releases, remasters, or commentary bonuses. To prevent our analysis from
+deluxe releases, remasters, or commentary bonuses. To prevent our analysis from
 being biased towards those repeated works, we should selectively filter out 
 albums that are listed multiple times. Firstly, the commentary version of
 Blue Slide Park will be omitted. Next, for any album that has a deluxe release,
@@ -405,34 +407,35 @@ df %>%
 These values tell us some great cursory information about the data.
 
 Some observations:
-+ **acousticness** has the widest range of all Spotify's metrics, but the mean
+
+* **acousticness** has the widest range of all Spotify's metrics, but the mean
 and 3rd quartile suggest the max may be an anomaly
-+ **danceability** and **energy** have relatively similar summaries, suggesting
+* **danceability** and **energy** have relatively similar summaries, suggesting
 possible correlation between the two. Values tend to trend upwards, indicating
 the minimum value in both of these variables may be outliers (potentially even
 the same track? worth investigating)
-+ **instrumentalness** doesn't contain any values > 0.5, Spotify's threshold 
+* **instrumentalness** doesn't contain any values > 0.5, Spotify's threshold 
 intended to represent instrumental tracks, as per their documentation linked
 above. This suggests the discography does not contain any purely instrumental
 tracks
-+ **liveness** having a max of ``r max(df$liveness)`` suggests Spotify is 
+* **liveness** having a max of ``r max(df$liveness)`` suggests Spotify is 
 confident that at least one track was performed live (documentation lists 0.8
 as the likelihood threshold). This max is very far from the rest of the measures
 for liveness, indicating a likely outlier
-+ **loudness**, measured in decibels (dB) also has a relatively wide range, 
+* **loudness**, measured in decibels (dB) also has a relatively wide range, 
 with all values < 0. Spotify lists typical range as falling between -60 and 0, 
 suggesting Mac's music trends towards the upper side of this traditional range
-+ **speechiness** tends to be lower than Spotify's typical value range for rap
+* **speechiness** tends to be lower than Spotify's typical value range for rap
 music (0.33 - 0.66 as per documentation). This suggests Mac's tracks have more
 sections that do not contain vocals in them. Investigating this on a per-album
 basis could yield interesting findings
-+ **valence** sees a wide range of values, with the mean and median falling just
+* **valence** sees a wide range of values, with the mean and median falling just
 under the halfway point between the min and max. However, the 3rd quartile value
 tells us that the max value is likely an anomaly
-+ **duration_ms** seems to hold a rather tight distribution for the most part, 
+* **duration_ms** seems to hold a rather tight distribution for the most part, 
 with both the min and the max values seemingly pretty distant from the typical
 values in the variable
-+ **tempo** holds some surprising values. The mean and median suggest that ~120
+* **tempo** holds some surprising values. The mean and median suggest that ~120
 is Mac's typical tempo, which is higher than the 
 [average hip-hop tempo range](https://www.izotope.com/en/learn/using-different-tempos-to-make-beats-for-different-genres.html).
 The linked source offers that typically, the higher the beats per minute (BPM),
@@ -484,3 +487,81 @@ more songs than his later releases, with *Faces* being the outlier of the
 discography as a whole. This could partly be due to *Faces* originally being
 released as a mixtape rather than a formal album, so perhaps it did not go
 through the same revision processes that an album might see before release.
+
+##### Track Durations and Album Runtimes {.tabset}
+
+Let's also take a look at track duration trends for each album, as well as each
+album's total runtime.
+
+###### Overview
+
+```{r track-duration-by-album}
+df %>%
+  group_by(album_name) %>%
+  ggplot(
+    aes(x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+        y = duration_ms)) +
+  geom_boxplot(aes(fill = album_name)) +
+  geom_point() +
+  labs(x = "",
+       y = "Track Duration (ms)",
+       title = "Track Duration by Album") +
+  ggthemes::theme_clean() +
+  scale_fill_manual(values = album_palette) +
+  theme(legend.position = "none")
+```
+
+This plot tells us that even though they typically had fewer tracks on them, 
+Mac's later albums contained tracks that, on average, were longer than tracks on
+earlier albums. This can almost be thought of as a focus on "quality over
+quantity" when it comes to the later albums. Furthermore, the plot shows that
+earlier albums had less variation in track duration, while later albums saw
+more variety. It is interesting to see how *The Divine Feminine,*, the album
+with the fewest tracks, not only contains the longest track in the dataset, but
+also two tracks that are significantly longer than the rest of the album. This
+could very well be an example of careful song selection to help each album
+maintain a relatively similar total runtime. We'll examine that below.
+
+```{r}
+
+```
+
+
+###### Track Duration by Album
+
+```{r track-durations-by-album}
+album_names <- arrange(df, df$album_release_date) %>% 
+  .$album_name %>% 
+  unique()
+
+figures = list()
+
+for(i in album_names){
+  
+  figures[[i]] <- df %>%
+    filter(album_name == i) %>%
+    ggplot(
+      aes(x = reorder(fct_inorder(track_name), desc(fct_inorder(track_name))), 
+          y = duration_ms, fill = i)) +
+    geom_col() +
+    labs(x = "",
+         y = "Track Duration (ms)",
+         title = i) +
+    scale_y_continuous(limits = c(0, 5.5e+05)) +
+    coord_flip() +
+    ggthemes::theme_clean() +
+    scale_fill_manual(values = album_palette) +
+    theme(legend.position = "none",
+          plot.title.position = "plot")
+  
+}
+```
+
+```{r align-plots}
+aligned_figs <- cowplot::align_plots(plotlist = figures, align = "v")
+```
+
+```{r display-plots, echo = FALSE, results = 'hide', fig.keep = 'all'}
+lapply(aligned_figs, function(x) {cowplot::ggdraw(x)})
+```
+
