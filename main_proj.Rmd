@@ -6,6 +6,7 @@ output:
   html_document:
     toc: true
     toc_depth: 4
+    toc_float: true
     number_sections: true
     df_print: "kable"
     code_folding: "show"
@@ -19,7 +20,7 @@ ggplot2::theme_set(ggplot2::theme_minimal())
 ```
 
 
-### Welcome!
+# Welcome!
 
 Hello, and welcome to my very first Markdown publication. 
 The vast majority of my time spent with R has been for university courses, so
@@ -34,10 +35,11 @@ the road, as others have helped me.
 
 In this project, we will be exploring how to use Spotify's API and 
 the **spotifyr** package to access data about a particular artists discography. 
-We'll also be utilizing the **genius** package to retrieve lyrics for 
-songs, allowing for sentiment to be explored and visualized.
+We'll also be utilizing the **geniusr** package to retrieve lyrics for 
+songs, allowing for sentiment to be explored and visualized, and doing our best
+to apply a clustering algorithm to the discography.
 
-### Obtaining Spotify API Credentials
+# Spotify API Credentials
 
 To begin, we will first need to head over to the 
 [Spotify for Developers](https://developer.spotify.com/dashboard/) page, 
@@ -67,7 +69,7 @@ source('auth_func.R')
 authenticate()
 ```
 
-### Gathering the Data
+# Gathering the Data
 
 Now that you are authenticated with the API, we can begin using the 
 **spotifyr** package's functions to retrieve information.
@@ -97,7 +99,7 @@ dim(mm_data)
 Excellent! The returned dataframe contains ``r dim(mm_data)[1]`` observations,
 or in this case songs, and each observation has ``r dim(mm_data)[2]`` variables.
 
-### Checking the Data
+# Checking the Data
 
 We can see from the `unique(mm_data$album_name)` function that the albums are
 listed in order of upload date, with Faces being the most recent album added
@@ -125,7 +127,7 @@ the variable from Spotify's data would suggest. Since this project involves
 analyzing how Mac's music changed throughout the duration of his career, it is
 important to have accurate ordering of dates associated with the albums.
 
-#### Webscraping
+## Webscraping
 
 To remedy this, we can use some quick web scraping to pull the release dates 
 from the wiki page and amend the data.
@@ -158,7 +160,7 @@ Let's check out what our scraping resulted in:
 head(rel_dates, 20)
 ```
 
-#### Cleaning the scraped data
+### Cleaning the scraped data
 
 While that looks pretty good, you can see that the album titles are listed
 twice, and the release dates could be formatted a little nicer. Let's fix that
@@ -189,7 +191,7 @@ rel_dates$V2 <- lubridate::parse_date_time(
 rel_dates
 ```
 
-#### Prepping for Merge
+## Prepping for Merge
 
 Now our release dates are in a more workable format. However, before we merge
 the two datasets, let's first take one more look at the album names in our 
@@ -243,7 +245,7 @@ for(i in c(2, 6, 8)){
 rel_dates$V1[rel_dates$V1 == "Live from Space"] = "Live From Space"
 ```
 
-#### Merging the Data
+## Merging the Data
 
 Now that our extra versions have been dropped from the data, we can finally
 merge our two datasets to attach the accurate release dates.
@@ -272,9 +274,9 @@ mm_data <- select(mm_data, -album_release_date) %>%
   rename(album_release_date = true_rel_date)
 ```
 
-### Filtering the Data
+## Filtering the Data
 
-#### Handling Duplicates
+### Handling Duplicates
 
 Before we head into the next step in our analysis, let's first make sure that we
 don't have multiple entries of any tracks.
@@ -323,7 +325,7 @@ mm_data <- mm_data %>%
 ```
 
 
-#### Variable Selection
+## Variable Selection
 
 Now that our release date and duplicate entry issues have been solved, let's 
 take a look at which variables we'd like to keep, and which ones we can exclude 
@@ -392,7 +394,7 @@ df <- mm_data %>% select(
 df <- df %>% mutate(across(c(key, mode, time_signature), as.factor))
 ```
 
-### Exploratory Data Analysis (EDA)
+# Exploratory Data Analysis (EDA)
 
 With the data sorted and filtered to only include relevant variables, we are
 now ready to begin using statistical summaries and creating visualizations
@@ -400,7 +402,7 @@ to glean insights from. We will be exploring the data to discover patterns,
 identify anomalies (or outliers), and to make some informed observations that
 will help us to better understand the dataset.
 
-#### Statistical Summary
+## Statistical Summary
 
 We'll start our analysis by looking at a basic statistical summary of the
 quantitative variables in our dataset. We can easily find what variables to 
@@ -414,7 +416,7 @@ df %>%
 
 These values tell us some great cursory information about the data.
 
-Some observations:
+### Some observations:
 
 * **acousticness** has the widest range of all Spotify's metrics, but the mean
 and 3rd quartile suggest the max may be an anomaly
@@ -452,11 +454,13 @@ interesting to investigate the relationship between **tempo**, **energy**,
 **valence**, and **danceability**. I'd expect, at the very least, a weak 
 positive correlation between all those variables
 
-#### Univariate Visualizations
+## Visualizations
 
-This section will focus on some simple but import plots, mostly involving counts
-and frequencies of measures. This will give a good overview of our data at a 
-high level before we delve into specifics and multivariate interactions.
+### Univariate Plots
+
+This section will focus on some simple but important plots, mostly involving 
+counts and frequencies of measures. This will give a good overview of our data 
+at a high level before we delve into specifics and multivariate interactions.
 
 ```{r album-track-counts}
 album_palette = c(
@@ -514,12 +518,12 @@ discography as a whole. This could partly be due to *Faces* originally being
 released as a mixtape rather than a formal album, so perhaps it did not go
 through the same revision processes that an album might see before release.
 
-##### Track Durations and Album Runtimes {.tabset}
+#### Duration Exploration {.tabset .tabset-fade}
 
 Let's also take a look at track duration trends for each album, as well as each
 album's total runtime.
 
-###### Overview
+##### Overview
 
 ```{r track-duration-by-album}
 df %>%
@@ -636,9 +640,9 @@ total_tracks_plot
 ```
 
 
-###### Track Duration by Album
+##### Album-Specific
 
-```{r track-durations-by-album}
+```{r track-durations-by-album, results = 'hide', fig.keep = 'all'}
 album_names <- arrange(df, df$album_release_date) %>% 
   .$album_name %>% 
   unique()
@@ -664,14 +668,10 @@ for(i in album_names){
           plot.title.position = "plot")
   
 }
-```
 
-```{r align-plots}
 aligned_figs <- cowplot::align_plots(plotlist = figures, align = "v")
-```
 
-```{r display-plots, results = 'hide', fig.keep = 'all'}
 lapply(aligned_figs, function(x) {cowplot::ggdraw(x)})
 ```
 
-##### Examining Explicitness
+#### Examining Explicitness
