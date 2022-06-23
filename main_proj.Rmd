@@ -13,10 +13,10 @@ output:
 
 ### Welcome!
 
-Hello, and welcome to my very first Markdown publication. I am still relatively 
-new to R, with about 2 years of exposure and experience with the language. 
-The vast majority of my time spent with R has been for university courses. 
-Throughout this time I have learned a great deal from books like 
+Hello, and welcome to my very first Markdown publication. 
+The vast majority of my time spent with R has been for university courses, so
+I thought it would be a good change of pace to apply the skills I've learned
+to a personal project. I have learned a great deal from books like 
 Hadley Wickham's [R for Data Science](https://r4ds.had.co.nz/), as well as 
 tutorials, articles, and markdown pages from sites such as 
 [RPubs](https://rpubs.com/), [R-bloggers](https://www.r-bloggers.com/), 
@@ -462,24 +462,43 @@ album_palette = c(
   "GO:OD AM" = "#A2A2A2",
   "The Divine Feminine" = "#DDC1BE",
   "Swimming" = "#668099",
-  "Circles (Deluxe)" = "#464646")
+  "Circles (Deluxe)" = "#464646"
+  )
 
 df %>% 
-  group_by(album_name, album_release_date) %>%
+  group_by(
+    album_name,
+    album_release_date) %>%
   tally() %>%
   ggplot(
-    aes(x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date), 
-        y = n)) +
-  geom_col(aes(fill = album_name), color = "lightgrey") +
-  geom_text(aes(label = n), vjust = -0.2, size = 3.5) +
-  scale_y_continuous(limits = c(0, 26)) +
-  labs(x = "", 
-       y = "",
-       title = "Tracks Per Mac Miller Album",
-       subtitle = "Ordered by Release Date") +
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date), 
+      y = n,
+      fill = album_name
+    )
+  ) +
+  geom_col() +
+  geom_text(
+    aes(label = n), 
+    vjust = -0.2, 
+    size = 3.5
+  ) +
+  scale_y_continuous(
+    limits = c(0, 26)
+  ) +
+  labs(
+    x = "", 
+    y = "",
+    title = "Tracks Per Mac Miller Album",
+    subtitle = "Ordered by Release Date"
+  ) +
   ggthemes::theme_clean() +
-  scale_fill_manual(values = album_palette) +
-  theme(legend.position = "none")
+  scale_fill_manual(
+    values = album_palette
+  ) +
+  theme(
+    legend.position = "none"
+  )
 ```
 
 From this plot we can see that Mac's earlier albums tended to have a couple
@@ -498,10 +517,11 @@ album's total runtime.
 ```{r track-duration-by-album}
 df %>%
   group_by(album_name) %>%
-  ggplot(
-    aes(x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
-        y = duration_ms)) +
-  geom_boxplot(aes(fill = album_name)) +
+  ggplot(aes(
+    x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+    y = duration_ms,
+    fill = album_name)) +
+  geom_boxplot() +
   geom_point() +
   labs(x = "",
        y = "Track Duration (ms)",
@@ -522,7 +542,115 @@ also two tracks that are significantly longer than the rest of the album. This
 could very well be an example of careful song selection to help each album
 maintain a relatively similar total runtime. We'll examine that below.
 
-```{r}
+```{r album-runtimes}
+df %>%
+  group_by(album_name) %>%
+  summarise(album_name, 
+            runtime = sum(duration_ms), 
+            album_release_date,
+            .groups = "keep") %>%
+  ggplot(aes(
+    x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+    y = runtime,
+    fill = album_name)) +
+  geom_col() +
+  labs(x = "",
+       y = "Runtime (ms)",
+       title = "Total Album Runtimes") +
+  scale_fill_manual(values = album_palette) +
+  ggthemes::theme_clean() +
+  theme(legend.position = "none")
+```
+
+By comparing this plot with the information about each album's number of tracks,
+we can see that there is a very clear correlation between number of tracks and
+album runtime. For example, even though *K.I.D.S.* has a lower average track
+duration than *Swimming*, the total runtime is still longer for *K.I.D.S.*, due
+to the difference in track count. Generally, longer albums are subject to a bit
+more criticism, as too long of a runtime can start to make the listener become
+disinterested if the music doesn't provide enough variation. Knowing this, it
+again makes sense that *Faces* has such a higher runtime than any other work, as
+it's original release as a mixtape meant that it didn't go through the same
+revisions and polishing processes that formal albums do. This runtime plot also
+confirms our previous theory of Mac's later albums revolving more around the
+substance of each individual track rather than making a longer, less focused 
+album. We can also see from the plot that the concept of keeping longer songs
+on *The Divine Feminine* does not really appear to have had a substantial 
+impact on the album's total runtime, as it is still significantly shorter than
+all other works.
+
+```{r test-code}
+df %>%
+  group_by(
+    album_name, 
+    album_release_date) %>%
+  summarise(
+    avg_dur = mean(duration_ms),
+    count = n()) %>%
+  pivot_longer(cols = c(avg_dur, count)) %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+      y = value,
+      color = factor(name)
+    )
+  ) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~name)
+```
+
+
+```{r album-trends, fig.height=8, results = 'hide', fig.show = 'all'}
+album_trends <- df %>%
+  group_by(album_name) %>%
+  summarise(
+    album_name,
+    album_release_date,
+    average_track_length = mean(duration_ms),
+    track_count = n(),
+    .groups = "keep") %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+    )
+  )
+
+avg_track_len_plot <- album_trends +
+  geom_line(aes(y = average_track_length, group = 1)) +
+  geom_point(aes(y = average_track_length)) +
+  geom_smooth(
+    aes(y = average_track_length, group = 1), 
+    method = "lm",
+    alpha = 0.5,
+    lty = "dotted",
+    se = FALSE) +
+  labs(x = "",
+       y = "Average Duration (ms)",
+       title = "Average Track Duration Trend") +
+  scale_y_continuous(
+    breaks = c(2e+05, 2.4e+05, 2.8e+05, 3.2e+05),
+    labels = c("2.0e+05", "2.4e+05", "2.8e+05", "3.2e+05")) +
+  ggthemes::theme_clean()
+
+total_tracks_plot <- album_trends +
+  geom_line(aes(y = track_count, group = 1)) +
+  geom_point(aes(y = track_count)) +
+  geom_smooth(
+    aes(y = track_count, group = 1), 
+    method = "lm",
+    alpha = 0.5,
+    lty = "dotted",
+    se = FALSE) +
+  labs(x = "",
+       y = "Tracks Per Album",
+       title = "Tracks per Album Trend") +
+  ggthemes::theme_clean()
+
+cowplot::plot_grid(
+  avg_track_len_plot, 
+  total_tracks_plot,
+  nrow = 2, align = "v")
 
 ```
 
@@ -561,7 +689,8 @@ for(i in album_names){
 aligned_figs <- cowplot::align_plots(plotlist = figures, align = "v")
 ```
 
-```{r display-plots, echo = FALSE, results = 'hide', fig.keep = 'all'}
+```{r display-plots, results = 'hide', fig.keep = 'all'}
 lapply(aligned_figs, function(x) {cowplot::ggdraw(x)})
 ```
 
+##### Examining Explicitness
