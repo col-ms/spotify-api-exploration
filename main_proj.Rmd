@@ -6,10 +6,18 @@ output:
   html_document:
     toc: true
     toc_depth: 4
+    number_sections: true
     df_print: "kable"
     code_folding: "show"
     keep_md: true
+    
 ---
+
+```{r chunk-setup}
+knitr::opts_chunk$set(fig.align = "center")
+ggplot2::theme_set(theme_minimal())
+```
+
 
 ### Welcome!
 
@@ -492,7 +500,6 @@ df %>%
     title = "Tracks Per Mac Miller Album",
     subtitle = "Ordered by Release Date"
   ) +
-  ggthemes::theme_clean() +
   scale_fill_manual(
     values = album_palette
   ) +
@@ -522,11 +529,10 @@ df %>%
     y = duration_ms,
     fill = album_name)) +
   geom_boxplot() +
-  geom_point() +
+  geom_point(alpha = 0.4, shape = "diamond") +
   labs(x = "",
        y = "Track Duration (ms)",
        title = "Track Duration by Album") +
-  ggthemes::theme_clean() +
   scale_fill_manual(values = album_palette) +
   theme(legend.position = "none")
 ```
@@ -536,7 +542,7 @@ Mac's later albums contained tracks that, on average, were longer than tracks on
 earlier albums. This can almost be thought of as a focus on "quality over
 quantity" when it comes to the later albums. Furthermore, the plot shows that
 earlier albums had less variation in track duration, while later albums saw
-more variety. It is interesting to see how *The Divine Feminine,*, the album
+more variety. It is interesting to see how *The Divine Feminine*, the album
 with the fewest tracks, not only contains the longest track in the dataset, but
 also two tracks that are significantly longer than the rest of the album. This
 could very well be an example of careful song selection to help each album
@@ -558,7 +564,6 @@ df %>%
        y = "Runtime (ms)",
        title = "Total Album Runtimes") +
   scale_fill_manual(values = album_palette) +
-  ggthemes::theme_clean() +
   theme(legend.position = "none")
 ```
 
@@ -579,29 +584,7 @@ on *The Divine Feminine* does not really appear to have had a substantial
 impact on the album's total runtime, as it is still significantly shorter than
 all other works.
 
-```{r test-code}
-df %>%
-  group_by(
-    album_name, 
-    album_release_date) %>%
-  summarise(
-    avg_dur = mean(duration_ms),
-    count = n()) %>%
-  pivot_longer(cols = c(avg_dur, count)) %>%
-  ggplot(
-    aes(
-      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
-      y = value,
-      color = factor(name)
-    )
-  ) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~name)
-```
-
-
-```{r album-trends, fig.height=8, results = 'hide', fig.show = 'all'}
+```{r album-trends, results = 'hide', fig.show = 'all', message = F}
 album_trends <- df %>%
   group_by(album_name) %>%
   summarise(
@@ -622,6 +605,7 @@ avg_track_len_plot <- album_trends +
   geom_smooth(
     aes(y = average_track_length, group = 1), 
     method = "lm",
+    formula = y ~ x,
     alpha = 0.5,
     lty = "dotted",
     se = FALSE) +
@@ -630,8 +614,7 @@ avg_track_len_plot <- album_trends +
        title = "Average Track Duration Trend") +
   scale_y_continuous(
     breaks = c(2e+05, 2.4e+05, 2.8e+05, 3.2e+05),
-    labels = c("2.0e+05", "2.4e+05", "2.8e+05", "3.2e+05")) +
-  ggthemes::theme_clean()
+    labels = c("200K", "240K", "280K", "320K"))
 
 total_tracks_plot <- album_trends +
   geom_line(aes(y = track_count, group = 1)) +
@@ -639,18 +622,16 @@ total_tracks_plot <- album_trends +
   geom_smooth(
     aes(y = track_count, group = 1), 
     method = "lm",
+    formula = y ~ x,
     alpha = 0.5,
     lty = "dotted",
     se = FALSE) +
   labs(x = "",
        y = "Tracks Per Album",
-       title = "Tracks per Album Trend") +
-  ggthemes::theme_clean()
+       title = "Tracks per Album Trend")
 
-cowplot::plot_grid(
-  avg_track_len_plot, 
-  total_tracks_plot,
-  nrow = 2, align = "v")
+avg_track_len_plot
+total_tracks_plot
 
 ```
 
@@ -677,7 +658,7 @@ for(i in album_names){
          title = i) +
     scale_y_continuous(limits = c(0, 5.5e+05)) +
     coord_flip() +
-    ggthemes::theme_clean() +
+    #ggthemes::theme_clean() +
     scale_fill_manual(values = album_palette) +
     theme(legend.position = "none",
           plot.title.position = "plot")
