@@ -2,16 +2,6 @@
 title: "Exploring Mac Miller's Discography with Spotify API"
 author: "Collin Smith"
 date: '2022-05-19'
-output: 
-  html_document:
-    toc: true
-    toc_depth: 4
-    toc_float: true
-    number_sections: true
-    df_print: "kable"
-    code_folding: "show"
-    keep_md: true
-    
 ---
 
 
@@ -36,8 +26,9 @@ the road, as others have helped me.
 
 In this project, we will be exploring how to use Spotify's API and 
 the **spotifyr** package to access data about a particular artists discography. 
-We'll also be utilizing the **genius** package to retrieve lyrics for 
-songs, allowing for sentiment to be explored and visualized.
+We'll also be utilizing the **geniusr** package to retrieve lyrics for 
+songs, allowing for sentiment to be explored and visualized, and doing our best
+to apply a clustering algorithm to the discography.
 
 # Spotify API Credentials
 
@@ -196,29 +187,28 @@ mm_data %>%
   distinct()
 ```
 
-<div class="kable-table">
-
-|album_name                                          |album_release_date |
-|:---------------------------------------------------|:------------------|
-|Faces                                               |2021-10-15         |
-|Circles (Deluxe)                                    |2020-03-19         |
-|Circles                                             |2020-01-17         |
-|Swimming                                            |2018-08-03         |
-|The Divine Feminine                                 |2016-09-16         |
-|Best Day Ever (5th Anniversary Remastered Edition)  |2016-06-03         |
-|GO:OD AM                                            |2015-09-18         |
-|Live From Space                                     |2013-12-17         |
-|Watching Movies with the Sound Off (Deluxe Edition) |2013-06-18         |
-|Watching Movies with the Sound Off                  |2013-06-18         |
-|Mac Miller : Live From London (With The Internet)   |2013-01-01         |
-|Macadelic (Remastered Edition)                      |2012-03-23         |
-|Blue Slide Park (Commentary Version)                |2011-11-15         |
-|Blue Slide Park (Edited Version)                    |2011-11-15         |
-|Blue Slide Park                                     |2011-11-08         |
-|K.I.D.S. (Deluxe)                                   |2010-08-13         |
-|K.I.D.S.                                            |2010-08-13         |
-
-</div>
+```
+## # A tibble: 17 x 2
+##    album_name                                          album_release_date
+##    <chr>                                               <chr>             
+##  1 Faces                                               2021-10-15        
+##  2 Circles (Deluxe)                                    2020-03-19        
+##  3 Circles                                             2020-01-17        
+##  4 Swimming                                            2018-08-03        
+##  5 The Divine Feminine                                 2016-09-16        
+##  6 Best Day Ever (5th Anniversary Remastered Edition)  2016-06-03        
+##  7 GO:OD AM                                            2015-09-18        
+##  8 Live From Space                                     2013-12-17        
+##  9 Watching Movies with the Sound Off (Deluxe Edition) 2013-06-18        
+## 10 Watching Movies with the Sound Off                  2013-06-18        
+## 11 Mac Miller : Live From London (With The Internet)   2013-01-01        
+## 12 Macadelic (Remastered Edition)                      2012-03-23        
+## 13 Blue Slide Park (Commentary Version)                2011-11-15        
+## 14 Blue Slide Park (Edited Version)                    2011-11-15        
+## 15 Blue Slide Park                                     2011-11-08        
+## 16 K.I.D.S. (Deluxe)                                   2010-08-13        
+## 17 K.I.D.S.                                            2010-08-13
+```
 
 This readout implies that Faces is the most recent album to release. However,
 by checking Mac's 
@@ -308,23 +298,22 @@ rel_dates$V2 <- lubridate::parse_date_time(
 rel_dates
 ```
 
-<div class="kable-table">
-
-|V1                                 |V2         |
-|:----------------------------------|:----------|
-|Blue Slide Park                    |2011-11-08 |
-|Watching Movies with the Sound Off |2013-06-18 |
-|GO:OD AM                           |2015-09-18 |
-|The Divine Feminine                |2016-09-16 |
-|Swimming                           |2018-08-03 |
-|Circles                            |2020-01-17 |
-|Live from Space                    |2013-12-17 |
-|K.I.D.S.                           |2010-08-13 |
-|Best Day Ever                      |2011-03-11 |
-|Macadelic                          |2012-03-23 |
-|Faces                              |2014-05-11 |
-
-</div>
+```
+## # A tibble: 11 x 2
+##    V1                                 V2        
+##    <chr>                              <date>    
+##  1 Blue Slide Park                    2011-11-08
+##  2 Watching Movies with the Sound Off 2013-06-18
+##  3 GO:OD AM                           2015-09-18
+##  4 The Divine Feminine                2016-09-16
+##  5 Swimming                           2018-08-03
+##  6 Circles                            2020-01-17
+##  7 Live from Space                    2013-12-17
+##  8 K.I.D.S.                           2010-08-13
+##  9 Best Day Ever                      2011-03-11
+## 10 Macadelic                          2012-03-23
+## 11 Faces                              2014-05-11
+```
 
 ## Prepping for Merge
 
@@ -424,23 +413,22 @@ select(mm_data, album_release_date, album_name, true_rel_date) %>%
   unique()
 ```
 
-<div class="kable-table">
-
-|    |album_release_date |album_name                                          |true_rel_date |
-|:---|:------------------|:---------------------------------------------------|:-------------|
-|1   |2021-10-15         |Faces                                               |2014-05-11    |
-|26  |2020-03-19         |Circles (Deluxe)                                    |2020-01-17    |
-|40  |2018-08-03         |Swimming                                            |2018-08-03    |
-|53  |2016-09-16         |The Divine Feminine                                 |2016-09-16    |
-|73  |2016-06-03         |Best Day Ever                                       |2011-03-11    |
-|89  |2015-09-18         |GO:OD AM                                            |2015-09-18    |
-|123 |2013-12-17         |Live From Space                                     |2013-12-17    |
-|137 |2013-06-18         |Watching Movies with the Sound Off (Deluxe Edition) |2013-06-18    |
-|156 |2012-03-23         |Macadelic                                           |2012-03-23    |
-|173 |2011-11-08         |Blue Slide Park                                     |2011-11-08    |
-|189 |2010-08-13         |K.I.D.S. (Deluxe)                                   |2010-08-13    |
-
-</div>
+```
+## # A tibble: 11 x 3
+##    album_release_date album_name                                   true_rel_date
+##    <chr>              <chr>                                        <date>       
+##  1 2021-10-15         Faces                                        2014-05-11   
+##  2 2020-03-19         Circles (Deluxe)                             2020-01-17   
+##  3 2018-08-03         Swimming                                     2018-08-03   
+##  4 2016-09-16         The Divine Feminine                          2016-09-16   
+##  5 2016-06-03         Best Day Ever                                2011-03-11   
+##  6 2015-09-18         GO:OD AM                                     2015-09-18   
+##  7 2013-12-17         Live From Space                              2013-12-17   
+##  8 2013-06-18         Watching Movies with the Sound Off (Deluxe ~ 2013-06-18   
+##  9 2012-03-23         Macadelic                                    2012-03-23   
+## 10 2011-11-08         Blue Slide Park                              2011-11-08   
+## 11 2010-08-13         K.I.D.S. (Deluxe)                            2010-08-13
+```
 
 Excellent! Now that we have each album's true release date, we can go ahead and
 drop the old variable `album_release_date` and rename our new variable to take
@@ -509,66 +497,22 @@ mm_data %>%
   arrange(album_name)
 ```
 
-<div class="kable-table">
-
-|track_name                                     |album_name          |explicit |
-|:----------------------------------------------|:-------------------|:--------|
-|Doors                                          |GO:OD AM            |TRUE     |
-|Brand Name                                     |GO:OD AM            |TRUE     |
-|Rush Hour                                      |GO:OD AM            |TRUE     |
-|Two Matches (feat. Ab-Soul)                    |GO:OD AM            |TRUE     |
-|100 Grandkids                                  |GO:OD AM            |TRUE     |
-|Time Flies (feat. Lil B)                       |GO:OD AM            |TRUE     |
-|Weekend (feat. Miguel)                         |GO:OD AM            |TRUE     |
-|Clubhouse                                      |GO:OD AM            |TRUE     |
-|In the Bag                                     |GO:OD AM            |TRUE     |
-|Break the Law                                  |GO:OD AM            |TRUE     |
-|Perfect Circle / God Speed                     |GO:OD AM            |TRUE     |
-|When in Rome                                   |GO:OD AM            |TRUE     |
-|ROS                                            |GO:OD AM            |TRUE     |
-|Cut the Check (feat. Chief Keef)               |GO:OD AM            |TRUE     |
-|Ascension                                      |GO:OD AM            |TRUE     |
-|Jump                                           |GO:OD AM            |TRUE     |
-|The Festival (feat. Little Dragon)             |GO:OD AM            |TRUE     |
-|Doors                                          |GO:OD AM            |FALSE    |
-|Brand Name                                     |GO:OD AM            |FALSE    |
-|Rush Hour                                      |GO:OD AM            |FALSE    |
-|Two Matches (feat. Ab-Soul)                    |GO:OD AM            |FALSE    |
-|100 Grandkids                                  |GO:OD AM            |FALSE    |
-|Time Flies (feat. Lil B)                       |GO:OD AM            |FALSE    |
-|Weekend (feat. Miguel)                         |GO:OD AM            |FALSE    |
-|Clubhouse                                      |GO:OD AM            |FALSE    |
-|In the Bag                                     |GO:OD AM            |FALSE    |
-|Break the Law                                  |GO:OD AM            |FALSE    |
-|Perfect Circle / God Speed                     |GO:OD AM            |FALSE    |
-|When in Rome                                   |GO:OD AM            |FALSE    |
-|ROS                                            |GO:OD AM            |FALSE    |
-|Cut the Check (feat. Chief Keef)               |GO:OD AM            |FALSE    |
-|Ascension                                      |GO:OD AM            |FALSE    |
-|Jump                                           |GO:OD AM            |FALSE    |
-|The Festival (feat. Little Dragon)             |GO:OD AM            |FALSE    |
-|Congratulations (feat. Bilal)                  |The Divine Feminine |TRUE     |
-|Dang! (feat. Anderson .Paak)                   |The Divine Feminine |TRUE     |
-|Stay                                           |The Divine Feminine |TRUE     |
-|Skin                                           |The Divine Feminine |TRUE     |
-|Cinderella (feat. Ty Dolla $ign)               |The Divine Feminine |TRUE     |
-|Planet God Damn (feat. Njomza)                 |The Divine Feminine |TRUE     |
-|Soulmate                                       |The Divine Feminine |FALSE    |
-|We (feat. CeeLo Green)                         |The Divine Feminine |TRUE     |
-|My Favorite Part                               |The Divine Feminine |FALSE    |
-|God Is Fair, Sexy Nasty (feat. Kendrick Lamar) |The Divine Feminine |TRUE     |
-|Congratulations (feat. Bilal)                  |The Divine Feminine |FALSE    |
-|Dang! (feat. Anderson .Paak)                   |The Divine Feminine |FALSE    |
-|Stay                                           |The Divine Feminine |FALSE    |
-|Skin                                           |The Divine Feminine |FALSE    |
-|Cinderella (feat. Ty Dolla $ign)               |The Divine Feminine |FALSE    |
-|Planet God Damn (feat. Njomza)                 |The Divine Feminine |FALSE    |
-|Soulmate                                       |The Divine Feminine |FALSE    |
-|We (feat. CeeLo Green)                         |The Divine Feminine |FALSE    |
-|My Favorite Part                               |The Divine Feminine |FALSE    |
-|God Is Fair, Sexy Nasty (feat. Kendrick Lamar) |The Divine Feminine |FALSE    |
-
-</div>
+```
+## # A tibble: 54 x 3
+##    track_name                  album_name explicit
+##    <chr>                       <chr>      <lgl>   
+##  1 Doors                       GO:OD AM   TRUE    
+##  2 Brand Name                  GO:OD AM   TRUE    
+##  3 Rush Hour                   GO:OD AM   TRUE    
+##  4 Two Matches (feat. Ab-Soul) GO:OD AM   TRUE    
+##  5 100 Grandkids               GO:OD AM   TRUE    
+##  6 Time Flies (feat. Lil B)    GO:OD AM   TRUE    
+##  7 Weekend (feat. Miguel)      GO:OD AM   TRUE    
+##  8 Clubhouse                   GO:OD AM   TRUE    
+##  9 In the Bag                  GO:OD AM   TRUE    
+## 10 Break the Law               GO:OD AM   TRUE    
+## # ... with 44 more rows
+```
 
 As expected, it looks like the duplicate entries stem from clean editions of
 albums. To handle this, we can first double-check that aside from the clean
@@ -585,31 +529,30 @@ mm_data %>%
   arrange(album_name)
 ```
 
-<div class="kable-table">
-
-|album_id               |album_name                                          |explicit == TRUE |  n|
-|:----------------------|:---------------------------------------------------|:----------------|--:|
-|13fsGE9UN5VaAkETSs94un |Best Day Ever                                       |TRUE             | 16|
-|6VhDYmsjHqRxKXd0z7hmXI |Blue Slide Park                                     |TRUE             | 16|
-|1YZ3k65Mqw3G8FzYlW1mmp |Circles (Deluxe)                                    |FALSE            | 12|
-|1YZ3k65Mqw3G8FzYlW1mmp |Circles (Deluxe)                                    |TRUE             |  2|
-|5SKnXCvB4fcGSZu32o3LRY |Faces                                               |FALSE            |  1|
-|5SKnXCvB4fcGSZu32o3LRY |Faces                                               |TRUE             | 24|
-|2Tyx5dLhHYkx6zeAdVaTzN |GO:OD AM                                            |TRUE             | 17|
-|6lEUoXk2C9IpUWPd4caiNE |GO:OD AM                                            |FALSE            | 17|
-|5pL6fzBD4sLs9hyau2CeUi |K.I.D.S. (Deluxe)                                   |FALSE            |  2|
-|5pL6fzBD4sLs9hyau2CeUi |K.I.D.S. (Deluxe)                                   |TRUE             | 16|
-|0oPKygNJATeXkPWre0R0Nr |Live From Space                                     |TRUE             | 14|
-|7nVdkG4gZZxB1I1RLN27fJ |Macadelic                                           |FALSE            |  2|
-|7nVdkG4gZZxB1I1RLN27fJ |Macadelic                                           |TRUE             | 15|
-|5wtE5aLX5r7jOosmPhJhhk |Swimming                                            |FALSE            |  1|
-|5wtE5aLX5r7jOosmPhJhhk |Swimming                                            |TRUE             | 12|
-|4gtXD5SL0yysd1eRIrDpnZ |The Divine Feminine                                 |FALSE            | 10|
-|6f6tko6NWoH00cyFOl4VYQ |The Divine Feminine                                 |FALSE            |  2|
-|6f6tko6NWoH00cyFOl4VYQ |The Divine Feminine                                 |TRUE             |  8|
-|3T02fCxAjApu18taJLLbyN |Watching Movies with the Sound Off (Deluxe Edition) |TRUE             | 19|
-
-</div>
+```
+## # A tibble: 19 x 4
+##    album_id               album_name                      `explicit == T~`     n
+##    <chr>                  <chr>                           <lgl>            <int>
+##  1 13fsGE9UN5VaAkETSs94un Best Day Ever                   TRUE                16
+##  2 6VhDYmsjHqRxKXd0z7hmXI Blue Slide Park                 TRUE                16
+##  3 1YZ3k65Mqw3G8FzYlW1mmp Circles (Deluxe)                FALSE               12
+##  4 1YZ3k65Mqw3G8FzYlW1mmp Circles (Deluxe)                TRUE                 2
+##  5 5SKnXCvB4fcGSZu32o3LRY Faces                           FALSE                1
+##  6 5SKnXCvB4fcGSZu32o3LRY Faces                           TRUE                24
+##  7 2Tyx5dLhHYkx6zeAdVaTzN GO:OD AM                        TRUE                17
+##  8 6lEUoXk2C9IpUWPd4caiNE GO:OD AM                        FALSE               17
+##  9 5pL6fzBD4sLs9hyau2CeUi K.I.D.S. (Deluxe)               FALSE                2
+## 10 5pL6fzBD4sLs9hyau2CeUi K.I.D.S. (Deluxe)               TRUE                16
+## 11 0oPKygNJATeXkPWre0R0Nr Live From Space                 TRUE                14
+## 12 7nVdkG4gZZxB1I1RLN27fJ Macadelic                       FALSE                2
+## 13 7nVdkG4gZZxB1I1RLN27fJ Macadelic                       TRUE                15
+## 14 5wtE5aLX5r7jOosmPhJhhk Swimming                        FALSE                1
+## 15 5wtE5aLX5r7jOosmPhJhhk Swimming                        TRUE                12
+## 16 4gtXD5SL0yysd1eRIrDpnZ The Divine Feminine             FALSE               10
+## 17 6f6tko6NWoH00cyFOl4VYQ The Divine Feminine             FALSE                2
+## 18 6f6tko6NWoH00cyFOl4VYQ The Divine Feminine             TRUE                 8
+## 19 3T02fCxAjApu18taJLLbyN Watching Movies with the Sound~ TRUE                19
+```
 
 We can see here that the only albums with two different entries for **album_id**
 are *GO:OD AM* and *The Divine Feminine*. These entries represent the explicit
@@ -916,7 +859,7 @@ discography as a whole. This could partly be due to *Faces* originally being
 released as a mixtape rather than a formal album, so perhaps it did not go
 through the same revision processes that an album might see before release.
 
-#### Track Durations and Album Runtimes {.tabset .tabset-fade}
+#### Duration Exploration {.tabset .tabset-fade}
 
 Let's also take a look at track duration trends for each album, as well as each
 album's total runtime.
@@ -1040,16 +983,14 @@ total_tracks_plot <- album_trends +
        title = "Tracks per Album Trend")
 
 avg_track_len_plot
-```
-
-<img src="main_proj_files/figure-html/album-trends-1.png" style="display: block; margin: auto;" />
-
-```r
 total_tracks_plot
 ```
 
-<img src="main_proj_files/figure-html/album-trends-2.png" style="display: block; margin: auto;" />
+<img src="main_proj_files/figure-html/album-trends-1.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/album-trends-2.png" style="display: block; margin: auto;" />
 
+While not too severe, these plots reveal that over the course of his career,
+Mac's albums tended to contain less songs, but those songs were of longer
+duration.
 
 ##### Album-Specific
 
@@ -1089,3 +1030,37 @@ lapply(aligned_figs, function(x) {cowplot::ggdraw(x)})
 <img src="main_proj_files/figure-html/track-durations-by-album-1.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-2.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-3.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-4.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-5.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-6.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-7.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-8.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-9.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-10.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-11.png" style="display: block; margin: auto;" />
 
 #### Examining Explicitness
+
+Let's take a quick look at the proportion of explicit and non-explicit (clean)
+tracks on each album.
+
+
+```r
+df %>%
+  group_by(album_name, album_release_date) %>%
+  count(explicit) %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+      y = n,
+      fill = explicit
+    )
+  ) + 
+  geom_col(position = "fill", color = "black", alpha = 0.8, width = 0.95) +
+  geom_text(aes(label = n), position = "fill", vjust = 1) +
+  labs(x = "",
+       y = "",
+       title = "Proportion of Explicit Tracks",
+       subtitle = "Per Album, ordered by Release Date",
+       fill = "Explicit") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(
+    values = c("FALSE" = "lightgreen", "TRUE" = "coral")
+  ) +
+  theme(legend.position = c(0.725, 1.1),
+        legend.direction = "horizontal",
+        legend.box.background = element_rect(color = "lightgrey"))
+```
+
+<img src="main_proj_files/figure-html/explicit-overview-plot-1.png" style="display: block; margin: auto;" />
+
