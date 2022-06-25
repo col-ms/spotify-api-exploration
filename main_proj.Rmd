@@ -2,16 +2,6 @@
 title: "Exploring Mac Miller's Discography with Spotify API"
 author: "Collin Smith"
 date: '2022-05-19'
-output: 
-  html_document:
-    toc: true
-    toc_depth: 4
-    toc_float: true
-    number_sections: true
-    df_print: "kable"
-    code_folding: "show"
-    keep_md: true
-    
 ---
 
 ```{r chunk-setup}
@@ -518,7 +508,7 @@ discography as a whole. This could partly be due to *Faces* originally being
 released as a mixtape rather than a formal album, so perhaps it did not go
 through the same revision processes that an album might see before release.
 
-#### Duration Exploration {.tabset .tabset-fade}
+#### Duration {.tabset .tabset-fade}
 
 Let's also take a look at track duration trends for each album, as well as each
 album's total runtime.
@@ -588,7 +578,7 @@ on *The Divine Feminine* does not really appear to have had a substantial
 impact on the album's total runtime, as it is still significantly shorter than
 all other works.
 
-```{r album-trends, results = 'hide', fig.show = 'all', message = F}
+```{r album-trends, results = 'hide', fig.show = 'hold', message = F}
 album_trends <- df %>%
   group_by(album_name) %>%
   summarise(
@@ -639,6 +629,9 @@ total_tracks_plot
 
 ```
 
+While not too severe, these plots reveal that over the course of his career,
+Mac's albums tended to contain less songs, but those songs were of longer
+duration.
 
 ##### Album-Specific
 
@@ -674,4 +667,57 @@ aligned_figs <- cowplot::align_plots(plotlist = figures, align = "v")
 lapply(aligned_figs, function(x) {cowplot::ggdraw(x)})
 ```
 
-#### Examining Explicitness
+#### Explicitness
+
+Let's take a quick look at the proportion of explicit and non-explicit (clean)
+tracks on each album.
+
+```{r explicit-overview-plot}
+exp_plot <- df %>%
+  group_by(album_name, album_release_date) %>%
+  count(explicit) %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+      y = n,
+      fill = explicit
+    )
+  ) + 
+  geom_col(position = "fill", color = "black", alpha = 0.8, width = 0.95) +
+  labs(x = "",
+       y = "",
+       title = "Proportion of Explicit Tracks",
+       subtitle = "Per Album, ordered by Release Date",
+       fill = "Explicit") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(
+    values = c("FALSE" = "lightgreen", "TRUE" = "coral")
+  ) +
+  theme(legend.position = c(0.725, 1.1),
+        legend.direction = "horizontal",
+        legend.box.background = element_rect(color = "lightgrey"))
+
+exp_table <- df %>%
+  group_by(album_name) %>%
+  summarise(n_tracks = n(),
+            n_explicit = sum(explicit == TRUE),
+            prop_explicit = round(n_explicit / n_tracks, 2),
+            album_release_date,
+            .groups = "keep") %>%
+  arrange(album_release_date) %>%
+  distinct() %>%
+  select("Album Name" = album_name,
+         "Track Count" = n_tracks,
+         "Explicit Tracks" = n_explicit,
+         "Prop. Explicit" = prop_explicit)
+
+exp_plot
+knitr::kable(exp_table)
+```
+
+Some observations from this plot and table:
+
+* All but one of the albums contained a proportion of explicit tracks >= 0.8
+* *Circles*, Mac's last album
+
+
