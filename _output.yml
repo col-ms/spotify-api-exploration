@@ -1,0 +1,20 @@
+ html_document:
+
+    keep_md: true
+    
+    theme: flatly
+    highlight: tango
+
+    number_sections: true
+    
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    
+    code_folding: show
+    code_download: true
+    
+    df_print: tibble
+
+    fig_width: 9
+    fig_height: 6
