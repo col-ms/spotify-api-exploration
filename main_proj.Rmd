@@ -446,7 +446,7 @@ positive correlation between all those variables
 
 ## Visualizations
 
-### Univariate Plots
+### Per Album Plots
 
 This section will focus on some simple but important plots, mostly involving 
 counts and frequencies of measures. This will give a good overview of our data 
@@ -712,12 +712,111 @@ exp_table <- df %>%
          "Prop. Explicit" = prop_explicit)
 
 exp_plot
-knitr::kable(exp_table)
+exp_table
 ```
 
 Some observations from this plot and table:
 
 * All but one of the albums contained a proportion of explicit tracks >= 0.8
-* *Circles*, Mac's last album
+* *Circles*, Mac's last album is the only work that contains more clean
+tracks than explicit tracks
 
+#### Acousticness
+
+Per Spotify's 
+[documentation](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features),
+**acousticness** is "*A confidence measure from 0.0 to 1.0 of whether or not 
+the track is acoustic. 1.0 represents high confidence that the track is 
+acoustic. According to 
+[Wikipedia](https://en.wikipedia.org/wiki/Acoustic_music),
+acoustic music is generally thought of as music that primary features
+features that produce sound through physical properties, as opposed to electric
+or digital amplification (think grand piano versus digital keyboard). 
+
+
+```{r acousticness-explore, results = 'hide', fig.show = 'hold'}
+df %>% 
+  group_by(album_name, album_release_date) %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+      y = acousticness,
+      fill = album_name
+    )
+  ) +
+  geom_boxplot() +
+  labs(x = "",
+       y = "",
+       title = "Summary of Acousticness",
+       subtitle = "Per Album, ordered by Release Date") +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = album_palette)
+
+df %>%
+  group_by(album_name, album_release_date) %>%
+  ggplot(
+    aes(
+      y = stringr::str_wrap(album_name, 28) %>% reorder(album_release_date),
+      x = acousticness,
+      fill = album_name
+    )
+  ) +
+  ggridges::geom_density_ridges2() +
+  labs(x = "",
+       y = "",
+       title = "Density of Acousticness Measures",
+       subtitle = "Per Album") +
+  scale_fill_manual(values = album_palette) +
+  theme(legend.position = "none")
+
+df %>%
+  group_by(album_name, album_release_date) %>%
+  summarise(
+    avg_acousticness = mean(acousticness)
+  ) %>%
+  ggplot(aes(x = album_release_date, y = avg_acousticness)) +
+  geom_line(color = "lightblue", size = 1.5) +
+  geom_point() +
+  ggrepel::geom_text_repel(aes(label = album_name), force = ) +
+  labs(y = "Acousticness",
+       x = "Album Release Year",
+       title = "Average Acousticness Per Album",
+       subtitle = "Ordered by Release Date")
+```
+
+From these plots we can see a clear trend of increasing **acousticness** towards
+the later works of Mac's career. We can also see greater variation in the 
+values of later albums, suggesting the possibility of more distinct sonic 
+changes from album to album later in his career.
+
+### Univariate Plots
+
+#### Distributions
+
+This section will focus on displaying some simple yet informative information
+regarding Spotify's quantitative metrics:
+
+* **acousticness**
+* **danceability**
+* **energy**
+* **instrumentalness**
+* **liveness**
+* **speechiness**
+* **valence**
+
+```{r spotify-measures-hists}
+ggplot(df, aes(x = acousticness)) +
+  # geom_histogram(bins = 40) +
+  geom_density()
+```
+
+```{r}
+df %>%
+  select(all_of(measures)) %>%
+  gather() %>%
+  mutate(key = factor(key)) %>%
+  filter(value > 0.1) %>%
+  ggplot(aes(x = value, color = key, fill = key)) +
+  geom_density(alpha = 0.1)
+```
 
