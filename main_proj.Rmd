@@ -421,7 +421,7 @@ tracks
 * **liveness** having a max of ``r max(df$liveness)`` suggests Spotify is 
 confident that at least one track was performed live (documentation lists 0.8
 as the likelihood threshold). This max is very far from the rest of the measures
-for liveness, indicating a likely outlier
+for **liveness**, indicating a likely outlier
 * **loudness**, measured in decibels (dB) also has a relatively wide range, 
 with all values < 0. Spotify lists typical range as falling between -60 and 0, 
 suggesting Mac's music trends towards the upper side of this traditional range
@@ -789,9 +789,7 @@ the later works of Mac's career. We can also see greater variation in the
 values of later albums, suggesting the possibility of more distinct sonic 
 changes from album to album later in his career.
 
-### Univariate Plots
-
-#### Distributions
+### Measure Distributions
 
 This section will focus on displaying some simple yet informative information
 regarding Spotify's quantitative metrics:
@@ -804,19 +802,42 @@ regarding Spotify's quantitative metrics:
 * **speechiness**
 * **valence**
 
-```{r spotify-measures-hists}
-ggplot(df, aes(x = acousticness)) +
-  # geom_histogram(bins = 40) +
-  geom_density()
-```
+```{r spot-measure-density}
+measures <- c(
+  "acousticness",
+  "danceability",
+  "energy",
+  "instrumentalness",
+  "liveness",
+  "speechiness",
+  "valence"
+)
 
-```{r}
 df %>%
   select(all_of(measures)) %>%
   gather() %>%
   mutate(key = factor(key)) %>%
   filter(value > 0.1) %>%
-  ggplot(aes(x = value, color = key, fill = key)) +
-  geom_density(alpha = 0.1)
+  ggplot(aes(x = value, color = key)) +
+  geom_density(size = 1.25) +
+  labs(x = "Value",
+       y = "Density",
+       color = "Measure",
+       title = "Spotify Measure Density Plot") +
+  scale_color_brewer(type = "qual", palette = 7)
 ```
 
+From this plot, we can see that **danceability** and **energy** seem to have
+very similar density curves. It is definitely worth investigating if there is
+any correlation between those two measures. Additionally, within the code to
+construct the plot, you'll notice there is a `filter()` statement to set the
+lower limit of the values to 0.1. This was done to exclude the enormous amount
+of **instrumentalness** observations that lie between 0 and 0.1, which stretched
+the y-axis by far too much for the rest of the density curves to be observed.
+
+### Multivariate Plots
+
+Here we will be investigating some of the questions posed above by looking at
+the interaction between specific variables.
+
+#### 
