@@ -1,0 +1,7 @@
+multivariate questions:
+-correlation between danceability and energy? (scatteplot)
+-explore speechiness per album
+-look at relationship between tempo and key / mode
+-look at tempo and energy
+-look at tempo and valence
+-look at tempo and danceability
