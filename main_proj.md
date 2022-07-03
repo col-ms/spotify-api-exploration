@@ -769,7 +769,7 @@ tracks
 * **liveness** having a max of `0.976` suggests Spotify is 
 confident that at least one track was performed live (documentation lists 0.8
 as the likelihood threshold). This max is very far from the rest of the measures
-for liveness, indicating a likely outlier
+for **liveness**, indicating a likely outlier
 * **loudness**, measured in decibels (dB) also has a relatively wide range, 
 with all values < 0. Spotify lists typical range as falling between -60 and 0, 
 suggesting Mac's music trends towards the upper side of this traditional range
@@ -794,7 +794,7 @@ positive correlation between all those variables
 
 ## Visualizations
 
-### Univariate Plots
+### Per Album Plots
 
 This section will focus on some simple but important plots, mostly involving 
 counts and frequencies of measures. This will give a good overview of our data 
@@ -859,7 +859,7 @@ discography as a whole. This could partly be due to *Faces* originally being
 released as a mixtape rather than a formal album, so perhaps it did not go
 through the same revision processes that an album might see before release.
 
-#### Duration Exploration {.tabset .tabset-fade}
+#### Duration {.tabset .tabset-fade}
 
 Let's also take a look at track duration trends for each album, as well as each
 album's total runtime.
@@ -1029,14 +1029,14 @@ lapply(aligned_figs, function(x) {cowplot::ggdraw(x)})
 
 <img src="main_proj_files/figure-html/track-durations-by-album-1.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-2.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-3.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-4.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-5.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-6.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-7.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-8.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-9.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-10.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/track-durations-by-album-11.png" style="display: block; margin: auto;" />
 
-#### Examining Explicitness
+#### Explicitness
 
 Let's take a quick look at the proportion of explicit and non-explicit (clean)
 tracks on each album.
 
 
 ```r
-df %>%
+exp_plot <- df %>%
   group_by(album_name, album_release_date) %>%
   count(explicit) %>%
   ggplot(
@@ -1047,7 +1047,6 @@ df %>%
     )
   ) + 
   geom_col(position = "fill", color = "black", alpha = 0.8, width = 0.95) +
-  geom_text(aes(label = n), position = "fill", vjust = 1) +
   labs(x = "",
        y = "",
        title = "Proportion of Explicit Tracks",
@@ -1060,7 +1059,187 @@ df %>%
   theme(legend.position = c(0.725, 1.1),
         legend.direction = "horizontal",
         legend.box.background = element_rect(color = "lightgrey"))
+
+exp_table <- df %>%
+  group_by(album_name) %>%
+  summarise(n_tracks = n(),
+            n_explicit = sum(explicit == TRUE),
+            prop_explicit = round(n_explicit / n_tracks, 2),
+            album_release_date,
+            .groups = "keep") %>%
+  arrange(album_release_date) %>%
+  distinct() %>%
+  select("Album Name" = album_name,
+         "Track Count" = n_tracks,
+         "Explicit Tracks" = n_explicit,
+         "Prop. Explicit" = prop_explicit)
+
+exp_plot
 ```
 
 <img src="main_proj_files/figure-html/explicit-overview-plot-1.png" style="display: block; margin: auto;" />
 
+```r
+exp_table
+```
+
+```
+## # A tibble: 11 x 4
+##    `Album Name`                  `Track Count` `Explicit Trac~` `Prop. Explicit`
+##    <chr>                                 <int>            <int>            <dbl>
+##  1 K.I.D.S. (Deluxe)                        18               16             0.89
+##  2 Best Day Ever                            16               16             1   
+##  3 Blue Slide Park                          16               16             1   
+##  4 Macadelic                                17               15             0.88
+##  5 Watching Movies with the Sou~            19               19             1   
+##  6 Live From Space                          14               14             1   
+##  7 Faces                                    25               24             0.96
+##  8 GO:OD AM                                 17               17             1   
+##  9 The Divine Feminine                      10                8             0.8 
+## 10 Swimming                                 13               12             0.92
+## 11 Circles (Deluxe)                         14                2             0.14
+```
+
+Some observations from this plot and table:
+
+* All but one of the albums contained a proportion of explicit tracks >= 0.8
+* *Circles*, Mac's last album is the only work that contains more clean
+tracks than explicit tracks
+
+#### Acousticness
+
+Per Spotify's 
+[documentation](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features),
+**acousticness** is "*A confidence measure from 0.0 to 1.0 of whether or not 
+the track is acoustic. 1.0 represents high confidence that the track is 
+acoustic. According to 
+[Wikipedia](https://en.wikipedia.org/wiki/Acoustic_music),
+acoustic music is generally thought of as music that primary features
+features that produce sound through physical properties, as opposed to electric
+or digital amplification (think grand piano versus digital keyboard). 
+
+
+
+```r
+df %>% 
+  group_by(album_name, album_release_date) %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+      y = acousticness,
+      fill = album_name
+    )
+  ) +
+  geom_boxplot() +
+  labs(x = "",
+       y = "",
+       title = "Summary of Acousticness",
+       subtitle = "Per Album, ordered by Release Date") +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = album_palette)
+
+df %>%
+  group_by(album_name, album_release_date) %>%
+  ggplot(
+    aes(
+      y = stringr::str_wrap(album_name, 28) %>% reorder(album_release_date),
+      x = acousticness,
+      fill = album_name
+    )
+  ) +
+  ggridges::geom_density_ridges2() +
+  labs(x = "",
+       y = "",
+       title = "Density of Acousticness Measures",
+       subtitle = "Per Album") +
+  scale_fill_manual(values = album_palette) +
+  theme(legend.position = "none")
+```
+
+```
+## Picking joint bandwidth of 0.12
+```
+
+```r
+df %>%
+  group_by(album_name, album_release_date) %>%
+  summarise(
+    avg_acousticness = mean(acousticness)
+  ) %>%
+  ggplot(aes(x = album_release_date, y = avg_acousticness)) +
+  geom_line(color = "lightblue", size = 1.5) +
+  geom_point() +
+  ggrepel::geom_text_repel(aes(label = album_name), force = ) +
+  labs(y = "Acousticness",
+       x = "Album Release Year",
+       title = "Average Acousticness Per Album",
+       subtitle = "Ordered by Release Date")
+```
+
+```
+## `summarise()` has grouped output by 'album_name'. You can override using the
+## `.groups` argument.
+```
+
+<img src="main_proj_files/figure-html/acousticness-explore-1.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/acousticness-explore-2.png" style="display: block; margin: auto;" /><img src="main_proj_files/figure-html/acousticness-explore-3.png" style="display: block; margin: auto;" />
+
+From these plots we can see a clear trend of increasing **acousticness** towards
+the later works of Mac's career. We can also see greater variation in the 
+values of later albums, suggesting the possibility of more distinct sonic 
+changes from album to album later in his career.
+
+### Measure Distributions
+
+This section will focus on displaying some simple yet informative information
+regarding Spotify's quantitative metrics:
+
+* **acousticness**
+* **danceability**
+* **energy**
+* **instrumentalness**
+* **liveness**
+* **speechiness**
+* **valence**
+
+
+```r
+measures <- c(
+  "acousticness",
+  "danceability",
+  "energy",
+  "instrumentalness",
+  "liveness",
+  "speechiness",
+  "valence"
+)
+
+df %>%
+  select(all_of(measures)) %>%
+  gather() %>%
+  mutate(key = factor(key)) %>%
+  filter(value > 0.1) %>%
+  ggplot(aes(x = value, color = key)) +
+  geom_density(size = 1.25) +
+  labs(x = "Value",
+       y = "Density",
+       color = "Measure",
+       title = "Spotify Measure Density Plot") +
+  scale_color_brewer(type = "qual", palette = 7)
+```
+
+<img src="main_proj_files/figure-html/spot-measure-density-1.png" style="display: block; margin: auto;" />
+
+From this plot, we can see that **danceability** and **energy** seem to have
+very similar density curves. It is definitely worth investigating if there is
+any correlation between those two measures. Additionally, within the code to
+construct the plot, you'll notice there is a `filter()` statement to set the
+lower limit of the values to 0.1. This was done to exclude the enormous amount
+of **instrumentalness** observations that lie between 0 and 0.1, which stretched
+the y-axis by far too much for the rest of the density curves to be observed.
+
+### Multivariate Plots
+
+Here we will be investigating some of the questions posed above by looking at
+the interaction between specific variables.
+
+#### 
