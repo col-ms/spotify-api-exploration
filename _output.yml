@@ -5,7 +5,7 @@
     theme: flatly
     highlight: tango
 
-    number_sections: true
+    number_sections: false
     
     toc: true
     toc_depth: 4
