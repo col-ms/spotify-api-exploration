@@ -1,0 +1,180 @@
+track_name,artist_name,album_name,album_release_date,acousticness,danceability,instrumentalness,liveness,loudness,speechiness,valence,duration_ms,explicit,key,mode,tempo,time_signature
+Inside Outside,Mac Miller,Faces,2014-05-11,0.0771,0.689,0,0.291,-5.971,0.0549,0.376,113217,TRUE,0,1,113.569,4
+Here We Go,Mac Miller,Faces,2014-05-11,0.0205,0.489,0,0.353,-4.668,0.466,0.55,167759,TRUE,6,0,75.1,4
+Friends (feat. ScHoolboy Q),Mac Miller,Faces,2014-05-11,0.149,0.557,0,0.611,-5.772,0.279,0.366,398454,TRUE,1,1,148.103,4
+Angel Dust,Mac Miller,Faces,2014-05-11,0.467,0.628,0,0.486,-5.439,0.234,0.41,222670,TRUE,5,1,78.029,4
+Malibu,Mac Miller,Faces,2014-05-11,0.145,0.591,4.9e-5,0.112,-5.76,0.165,0.226,211680,TRUE,6,0,78.104,4
+What Do You Do (feat. Sir Michael Rocks),Mac Miller,Faces,2014-05-11,0.847,0.665,0,0.166,-5.698,0.422,0.444,232298,TRUE,10,1,87.894,4
+It Just Doesn’t Matter,Mac Miller,Faces,2014-05-11,0.449,0.58,0,0.276,-6.637,0.104,0.778,216702,TRUE,8,0,96.878,4
+Therapy,Mac Miller,Faces,2014-05-11,0.0323,0.634,0.00323,0.388,-7.008,0.0954,0.392,248730,TRUE,1,0,140.017,4
+Polo Jeans (feat. Earl Sweatshirt),Mac Miller,Faces,2014-05-11,0.493,0.732,7.02e-6,0.388,-7.891,0.41,0.581,211682,TRUE,1,1,147.025,4
+Happy Birthday,Mac Miller,Faces,2014-05-11,0.00353,0.657,0,0.184,-5.233,0.0589,0.386,168819,TRUE,11,0,86.018,4
+Wedding,Mac Miller,Faces,2014-05-11,0.722,0.482,0,0.377,-6.75,0.386,0.35,229819,TRUE,1,1,132.551,1
+Funeral,Mac Miller,Faces,2014-05-11,0.655,0.659,7.69e-6,0.108,-6.976,0.157,0.377,223794,TRUE,0,1,74.005,4
+Diablo,Mac Miller,Faces,2014-05-11,0.0395,0.595,4.06e-6,0.619,-4.238,0.31,0.464,198107,TRUE,1,1,159.83,4
+Ave Maria,Mac Miller,Faces,2014-05-11,0.0822,0.426,0,0.191,-4.674,0.25,0.654,175779,TRUE,5,0,170.45,4
+55,Mac Miller,Faces,2014-05-11,0.506,0.46,0.486,0.165,-7.839,0.041,0.237,52710,FALSE,0,1,132.173,4
+San Francisco,Mac Miller,Faces,2014-05-11,0.182,0.59,2.51e-5,0.11,-7.103,0.447,0.19,164370,TRUE,0,1,77.914,4
+Colors and Shapes,Mac Miller,Faces,2014-05-11,0.522,0.645,0.0914,0.291,-8.888,0.0537,0.397,331104,TRUE,7,0,142.175,4
+Insomniak (feat. Rick Ross),Mac Miller,Faces,2014-05-11,0.093,0.697,0,0.0917,-5.594,0.108,0.314,239954,TRUE,1,1,120.08,4
+Uber (feat. Mike Jones),Mac Miller,Faces,2014-05-11,0.391,0.537,3.33e-4,0.115,-5.858,0.319,0.617,271283,TRUE,5,0,170.177,4
+Rain (feat. Vince Staples),Mac Miller,Faces,2014-05-11,0.528,0.443,0,0.186,-5.943,0.332,0.68,153881,TRUE,0,1,177.462,4
+Apparition,Mac Miller,Faces,2014-05-11,0.118,0.678,3.83e-4,0.203,-6.795,0.334,0.27,208093,TRUE,9,1,75.454,4
+Thumbalina,Mac Miller,Faces,2014-05-11,0.0697,0.542,2.74e-6,0.688,-4.723,0.395,0.689,186282,TRUE,2,0,95.736,4
+New Faces v2 (feat. Earl Sweatshirt and Da$h),Mac Miller,Faces,2014-05-11,0.0536,0.479,0,0.456,-5.807,0.323,0.244,327560,TRUE,1,0,110.456,3
+Grand Finale,Mac Miller,Faces,2014-05-11,0.188,0.613,0,0.131,-5.409,0.116,0.325,211341,TRUE,2,1,78.05,3
+Yeah - bonus,Mac Miller,Faces,2014-05-11,0.139,0.511,8.06e-6,0.205,-5.231,0.072,0.146,304192,TRUE,8,1,148.082,4
+Circles,Mac Miller,Circles (Deluxe),2020-01-17,0.896,0.61,0.00461,0.108,-15.186,0.0486,0.37,170360,FALSE,9,1,151.964,4
+Complicated,Mac Miller,Circles (Deluxe),2020-01-17,0.136,0.831,0.00217,0.0703,-8.073,0.052,0.601,232211,FALSE,0,1,75.014,4
+Blue World,Mac Miller,Circles (Deluxe),2020-01-17,0.389,0.742,0,0.0694,-8.98,0.419,0.508,209440,TRUE,8,1,84.931,4
+Good News,Mac Miller,Circles (Deluxe),2020-01-17,0.853,0.794,0.134,0.112,-12.92,0.173,0.241,342040,FALSE,1,0,174.088,4
+I Can See,Mac Miller,Circles (Deluxe),2020-01-17,0.391,0.699,0.0126,0.0996,-9.922,0.0882,0.0546,220853,FALSE,5,0,114.86,4
+Everybody,Mac Miller,Circles (Deluxe),2020-01-17,0.0333,0.875,0.0143,0.113,-9.077,0.138,0.112,256506,FALSE,9,0,152.061,4
+Woods,Mac Miller,Circles (Deluxe),2020-01-17,0.135,0.779,0.206,0.111,-10.847,0.0474,0.46,286386,FALSE,0,1,85.011,4
+Hand Me Downs,Mac Miller,Circles (Deluxe),2020-01-17,0.474,0.677,8.71e-4,0.064,-11.198,0.149,0.336,298440,FALSE,2,1,68.985,4
+That's On Me,Mac Miller,Circles (Deluxe),2020-01-17,0.591,0.583,0.0104,0.33,-10.086,0.0261,0.342,217868,FALSE,10,1,155.199,3
+Hands,Mac Miller,Circles (Deluxe),2020-01-17,0.0459,0.739,0,0.159,-8.608,0.171,0.542,199981,TRUE,0,1,74.962,4
+Surf,Mac Miller,Circles (Deluxe),2020-01-17,0.754,0.828,0.0706,0.15,-13.066,0.166,0.231,330506,FALSE,1,0,147.279,4
+Once A Day,Mac Miller,Circles (Deluxe),2020-01-17,0.947,0.762,0,0.124,-16.735,0.0503,0.339,160266,FALSE,2,0,96.838,4
+Right,Mac Miller,Circles (Deluxe),2020-01-17,0.804,0.682,0.359,0.106,-14.267,0.126,0.475,287871,FALSE,5,1,82.954,4
+Floating,Mac Miller,Circles (Deluxe),2020-01-17,0.669,0.505,0.052,0.113,-11.599,0.0416,0.36,254099,FALSE,3,1,135.12,4
+Come Back to Earth,Mac Miller,Swimming,2018-08-03,0.89,0.272,0.00925,0.275,-12.148,0.0349,0.119,161840,FALSE,2,0,83.507,4
+Hurt Feelings,Mac Miller,Swimming,2018-08-03,0.343,0.69,0.00218,0.113,-8.054,0.13,0.325,245640,TRUE,8,1,157.655,4
+What's the Use?,Mac Miller,Swimming,2018-08-03,0.736,0.759,0.00989,0.107,-10.338,0.12,0.561,288640,TRUE,1,0,104.974,4
+Perfecto,Mac Miller,Swimming,2018-08-03,0.748,0.599,0,0.111,-11.212,0.174,0.203,215413,TRUE,1,1,148.09,4
+Self Care,Mac Miller,Swimming,2018-08-03,0.367,0.52,0.00187,0.119,-8.109,0.206,0.177,345133,TRUE,1,1,141.894,4
+Wings,Mac Miller,Swimming,2018-08-03,0.818,0.656,0.00386,0.107,-8.771,0.162,0.349,250120,TRUE,8,1,119.057,4
+Ladders,Mac Miller,Swimming,2018-08-03,0.236,0.802,0.00531,0.105,-8.379,0.162,0.291,287040,TRUE,8,1,103.961,4
+Small Worlds,Mac Miller,Swimming,2018-08-03,0.814,0.516,4.5e-6,0.0995,-9.105,0.249,0.515,271733,TRUE,5,1,78.267,4
+Conversation Pt. 1,Mac Miller,Swimming,2018-08-03,0.64,0.787,5.22e-5,0.11,-10.032,0.113,0.264,210253,TRUE,6,0,144.998,4
+Dunno,Mac Miller,Swimming,2018-08-03,0.768,0.622,0.00906,0.134,-11.322,0.0445,0.0998,237093,TRUE,1,1,81.87,4
+Jet Fuel,Mac Miller,Swimming,2018-08-03,0.54,0.791,0,0.103,-9.622,0.0698,0.284,345213,TRUE,7,0,119.973,4
+2009,Mac Miller,Swimming,2018-08-03,0.77,0.533,1.64e-4,0.0969,-9.363,0.517,0.173,347986,TRUE,6,0,155.158,4
+So It Goes,Mac Miller,Swimming,2018-08-03,0.812,0.576,0.125,0.0943,-6.474,0.231,0.294,312960,TRUE,0,1,148.173,4
+Congratulations (feat. Bilal),Mac Miller,The Divine Feminine,2016-09-16,0.948,0.465,0.00155,0.18,-12.637,0.0455,0.207,256426,TRUE,4,0,57.75,4
+Dang! (feat. Anderson .Paak),Mac Miller,The Divine Feminine,2016-09-16,0.00826,0.836,3.55e-4,0.0837,-6.907,0.23,0.556,305350,TRUE,5,0,107.018,4
+Stay,Mac Miller,The Divine Feminine,2016-09-16,0.566,0.742,1.35e-4,0.641,-7.017,0.139,0.55,326426,TRUE,6,1,134.01,4
+Skin,Mac Miller,The Divine Feminine,2016-09-16,0.527,0.614,0,0.111,-6.919,0.0651,0.481,287906,TRUE,5,0,120.04,4
+Cinderella (feat. Ty Dolla $ign),Mac Miller,The Divine Feminine,2016-09-16,0.235,0.545,0,0.345,-6.874,0.047,0.24,480186,TRUE,8,0,140.021,4
+Planet God Damn (feat. Njomza),Mac Miller,The Divine Feminine,2016-09-16,0.633,0.643,1.09e-4,0.104,-12.87,0.641,0.431,191746,TRUE,9,0,173.147,4
+Soulmate,Mac Miller,The Divine Feminine,2016-09-16,0.132,0.606,1.1e-6,0.148,-6.904,0.512,0.561,272973,FALSE,1,1,111.044,4
+We (feat. CeeLo Green),Mac Miller,The Divine Feminine,2016-09-16,0.794,0.641,0.0515,0.131,-9.43,0.0579,0.601,319272,TRUE,3,0,138.869,4
+My Favorite Part,Mac Miller,The Divine Feminine,2016-09-16,0.627,0.861,1.93e-6,0.14,-7.194,0.0526,0.718,216000,FALSE,6,1,95.016,4
+"God Is Fair, Sexy Nasty (feat. Kendrick Lamar)",Mac Miller,The Divine Feminine,2016-09-16,0.328,0.467,4.28e-5,0.113,-12.028,0.185,0.136,500960,TRUE,2,1,95.931,4
+Best Day Ever,Mac Miller,Best Day Ever,2011-03-11,0.0401,0.223,0,0.216,-4.531,0.0461,0.0681,159119,TRUE,9,1,175.028,4
+Get Up,Mac Miller,Best Day Ever,2011-03-11,0.00546,0.44,0,0.232,-4.764,0.0683,0.378,158178,TRUE,4,1,91.099,4
+Donald Trump,Mac Miller,Best Day Ever,2011-03-11,0.0318,0.716,0,0.367,-4.968,0.123,0.799,164522,TRUE,1,0,81.508,4
+Oy Vey,Mac Miller,Best Day Ever,2011-03-11,0.0269,0.749,0,0.134,-5.742,0.197,0.471,208123,TRUE,1,1,152.076,4
+I'll Be There,Mac Miller,Best Day Ever,2011-03-11,0.154,0.771,0,0.0888,-5.834,0.0574,0.704,191772,TRUE,8,1,82.979,4
+Wear My Hat,Mac Miller,Best Day Ever,2011-03-11,0.328,0.837,0,0.0973,-4.038,0.0667,0.871,240095,TRUE,3,0,76.013,4
+Wake Up,Mac Miller,Best Day Ever,2011-03-11,0.0457,0.737,0,0.236,-5.057,0.141,0.642,234938,TRUE,4,0,109.354,4
+All Around the World,Mac Miller,Best Day Ever,2011-03-11,0.00608,0.468,0,0.0749,-4.191,0.207,0.403,221232,TRUE,1,1,150.777,4
+Down the Rabbit Hole,Mac Miller,Best Day Ever,2011-03-11,0.419,0.618,0,0.241,-5.503,0.121,0.309,193655,TRUE,2,1,143.982,4
+In the Air,Mac Miller,Best Day Ever,2011-03-11,0.871,0.663,0.00163,0.104,-10.368,0.0416,0.426,173690,TRUE,8,1,141.12,4
+Play Ya Cards,Mac Miller,Best Day Ever,2011-03-11,0.315,0.745,0,0.125,-3.172,0.14,0.832,138796,TRUE,7,1,109.875,4
+She Said,Mac Miller,Best Day Ever,2011-03-11,0.0499,0.504,0,0.286,-3.884,0.298,0.521,166902,TRUE,9,1,179.051,4
+Life Ain't Easy,Mac Miller,Best Day Ever,2011-03-11,0.034,0.437,0,0.257,-3.754,0.249,0.629,157691,TRUE,7,1,189.304,4
+Snooze,Mac Miller,Best Day Ever,2011-03-11,0.0638,0.679,0,0.311,-4.284,0.0993,0.292,169763,TRUE,9,1,102.041,4
+Keep Floatin',Mac Miller,Best Day Ever,2011-03-11,0.0795,0.697,0,0.139,-6.671,0.151,0.348,263337,TRUE,5,0,140.082,4
+BDE Bonus,Mac Miller,Best Day Ever,2011-03-11,0.521,0.53,1.62e-5,0.0665,-8.701,0.182,0.322,243034,TRUE,9,1,181.539,4
+Doors,Mac Miller,GO:OD AM,2015-09-18,0.916,0.497,5.41e-6,0.343,-15.09,0.0392,0.221,78013,TRUE,2,0,134.115,4
+Brand Name,Mac Miller,GO:OD AM,2015-09-18,0.0565,0.385,7.24e-6,0.0632,-5.158,0.0805,0.398,302133,TRUE,9,0,148.385,4
+Rush Hour,Mac Miller,GO:OD AM,2015-09-18,0.262,0.602,0,0.172,-5.375,0.265,0.304,201840,TRUE,6,0,163.817,4
+Two Matches (feat. Ab-Soul),Mac Miller,GO:OD AM,2015-09-18,0.204,0.622,0,0.572,-4.995,0.298,0.492,276386,TRUE,2,1,79.715,4
+100 Grandkids,Mac Miller,GO:OD AM,2015-09-18,0.371,0.735,0,0.47,-3.766,0.0874,0.373,278506,TRUE,10,0,93.718,4
+Time Flies (feat. Lil B),Mac Miller,GO:OD AM,2015-09-18,0.585,0.527,0,0.34,-5.472,0.394,0.72,173013,TRUE,9,0,79.788,4
+Weekend (feat. Miguel),Mac Miller,GO:OD AM,2015-09-18,0.47,0.843,0,0.147,-8.442,0.178,0.19,208080,TRUE,8,1,120.058,4
+Clubhouse,Mac Miller,GO:OD AM,2015-09-18,0.235,0.785,0,0.2,-5.927,0.239,0.907,180866,TRUE,0,0,115.187,4
+In the Bag,Mac Miller,GO:OD AM,2015-09-18,0.301,0.717,0,0.396,-6.887,0.409,0.564,275506,TRUE,1,1,143.812,4
+Break the Law,Mac Miller,GO:OD AM,2015-09-18,0.193,0.464,0,0.155,-5.374,0.263,0.438,195840,TRUE,10,0,148.442,4
+Perfect Circle / God Speed,Mac Miller,GO:OD AM,2015-09-18,0.469,0.463,0,0.157,-6.943,0.235,0.35,475826,TRUE,10,1,85.148,4
+When in Rome,Mac Miller,GO:OD AM,2015-09-18,0.0513,0.837,0,0.262,-4.301,0.074,0.216,223120,TRUE,10,0,124.04,4
+ROS,Mac Miller,GO:OD AM,2015-09-18,0.601,0.535,0,0.376,-8.919,0.175,0.284,343213,TRUE,1,0,120.554,4
+Cut the Check (feat. Chief Keef),Mac Miller,GO:OD AM,2015-09-18,0.0596,0.832,0,0.257,-6.706,0.228,0.522,170706,TRUE,1,1,100.004,4
+Ascension,Mac Miller,GO:OD AM,2015-09-18,0.346,0.756,0,0.191,-6.321,0.141,0.34,292466,TRUE,8,1,120.025,4
+Jump,Mac Miller,GO:OD AM,2015-09-18,0.0597,0.649,0,0.735,-7.187,0.0734,0.298,279733,TRUE,5,0,132.986,4
+The Festival (feat. Little Dragon),Mac Miller,GO:OD AM,2015-09-18,0.806,0.574,0.00335,0.27,-8.177,0.165,0.386,278693,TRUE,1,1,133.675,4
+S.D.S. - Live,Mac Miller,Live From Space,2013-12-17,0.133,0.417,1.9e-4,0.591,-7.153,0.448,0.677,210933,TRUE,8,0,176.26,4
+The Star Room / Killin' Time - Live,Mac Miller,Live From Space,2013-12-17,0.156,0.504,0.00295,0.839,-7.069,0.422,0.204,333120,TRUE,1,0,95.845,4
+BDE (Best Day Ever) - Live,Mac Miller,Live From Space,2013-12-17,0.00817,0.434,5.16e-5,0.945,-9.589,0.102,0.261,321960,TRUE,2,1,96.156,4
+Bird Call - Live,Mac Miller,Live From Space,2013-12-17,0.147,0.669,0.00129,0.74,-5.977,0.213,0.528,161773,TRUE,1,1,107.429,4
+Watching Movies - Live,Mac Miller,Live From Space,2013-12-17,0.0391,0.423,0.00137,0.976,-8.36,0.425,0.275,213106,TRUE,11,1,147.003,4
+REMember - Live,Mac Miller,Live From Space,2013-12-17,0.0531,0.453,0,0.407,-8.642,0.123,0.0939,271133,TRUE,1,0,77.215,4
+The Question - Live,Mac Miller,Live From Space,2013-12-17,0.00443,0.421,3.97e-4,0.948,-8.539,0.154,0.395,491573,TRUE,0,0,142.959,4
+Objects in the Mirror - Live,Mac Miller,Live From Space,2013-12-17,0.247,0.394,3.88e-6,0.656,-7.645,0.373,0.193,389800,TRUE,1,1,165.12,4
+Youforia - Live,Mac Miller,Live From Space,2013-12-17,0.981,0.32,0.00181,0.685,-14.635,0.0378,0.137,246053,TRUE,1,1,65.968,4
+Eggs Aisle,Mac Miller,Live From Space,2013-12-17,0.0632,0.598,0.00201,0.188,-5.769,0.0755,0.402,160066,TRUE,1,0,89.987,4
+Earth,Mac Miller,Live From Space,2013-12-17,0.111,0.763,1.29e-6,0.0996,-8.251,0.118,0.641,256773,TRUE,1,1,84.011,4
+Life,Mac Miller,Live From Space,2013-12-17,0.679,0.525,0,0.0808,-11.664,0.122,0.089,195453,TRUE,2,1,122.159,4
+Black Bush,Mac Miller,Live From Space,2013-12-17,0.296,0.708,4.25e-6,0.289,-7.813,0.0364,0.277,190466,TRUE,5,1,78.014,4
+In the Morning,Mac Miller,Live From Space,2013-12-17,0.0442,0.551,4.05e-4,0.121,-8.553,0.396,0.116,265066,TRUE,4,1,191.921,4
+The Star Room,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.593,0.44,7.43e-5,0.471,-5.879,0.186,0.355,275283,TRUE,8,1,75.516,4
+Avian,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.267,0.548,0,0.19,-7.287,0.131,0.259,196756,TRUE,7,1,75.11,4
+I'm Not Real,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.401,0.474,0,0.657,-6.047,0.184,0.741,203399,TRUE,1,1,152.087,4
+S.D.S.,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.228,0.595,0,0.156,-4.642,0.363,0.295,184537,TRUE,1,1,93.116,4
+Bird Call,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.225,0.688,0.00188,0.396,-8.626,0.267,0.626,128720,TRUE,1,1,100.045,4
+Matches,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.189,0.707,0,0.337,-6.242,0.297,0.456,178410,TRUE,10,0,138.041,4
+I Am Who Am (Killin' Time),Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.611,0.368,1.23e-6,0.145,-8.24,0.252,0.181,301096,TRUE,4,0,75.81,4
+Objects in the Mirror,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.623,0.645,2.02e-5,0.107,-6.625,0.0532,0.19,259143,TRUE,1,1,77.021,4
+Red Dot Music,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.156,0.537,0,0.158,-6.734,0.459,0.284,367930,TRUE,5,0,148.757,4
+Gees,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.153,0.622,0,0.634,-5.04,0.346,0.596,175672,TRUE,1,1,188.251,4
+Watching Movies,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.0936,0.509,0,0.397,-5.977,0.38,0.296,220470,TRUE,10,0,135.062,4
+Suplexes Inside of Complexes and Duplexes,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.82,0.405,1.31e-4,0.106,-6.687,0.498,0.474,167437,TRUE,7,0,80.06,4
+Remember,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.0755,0.473,1.64e-5,0.119,-10.807,0.112,0.0746,268366,TRUE,9,1,139.661,4
+Someone Like You,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.0451,0.628,3.29e-6,0.119,-5.483,0.119,0.0603,256423,TRUE,2,1,135.047,4
+Aquarium,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.388,0.512,0,0.639,-7.379,0.171,0.415,278044,TRUE,4,0,142.147,4
+Youforia,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.106,0.141,0,0.151,-6.234,0.0433,0.0871,241651,TRUE,8,1,180.696,3
+Goosebumpz - Bonus Track,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.00598,0.668,0,0.145,-5.234,0.241,0.597,202351,TRUE,9,1,144.112,4
+O.K. - Bonus Track,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.0579,0.814,0,0.223,-6.863,0.43,0.764,160868,TRUE,1,1,115.211,4
+Claymation - Bonus Track,Mac Miller,Watching Movies with the Sound Off (Deluxe Edition),2013-06-18,0.172,0.664,0,0.213,-4.849,0.264,0.624,232473,TRUE,11,0,157.925,4
+Love Me As I Have Loved You,Mac Miller,Macadelic,2012-03-23,0.775,0.374,0.00117,0.723,-25.426,0.0535,0.35,75421,FALSE,0,0,139.096,4
+Desperado,Mac Miller,Macadelic,2012-03-23,0.148,0.378,0,0.188,-5.232,0.514,0.206,240003,TRUE,8,0,179.265,4
+Loud,Mac Miller,Macadelic,2012-03-23,0.00411,0.635,1.08e-5,0.391,-4.315,0.0402,0.254,170861,TRUE,1,1,140.013,4
+Thoughts from a Balcony,Mac Miller,Macadelic,2012-03-23,0.158,0.48,0,0.109,-6.153,0.323,0.475,185779,TRUE,6,1,87.327,4
+Aliens Fighting Robots,Mac Miller,Macadelic,2012-03-23,0.264,0.645,0,0.208,-4.743,0.221,0.549,279568,TRUE,9,1,145.999,4
+Vitamins,Mac Miller,Macadelic,2012-03-23,0.493,0.65,2.05e-4,0.382,-2.757,0.0364,0.487,183135,TRUE,2,1,139.971,4
+Fight the Feeling,Mac Miller,Macadelic,2012-03-23,0.111,0.569,0,0.655,-5.873,0.365,0.811,301769,TRUE,11,0,148.067,4
+Lucky Ass Bitch,Mac Miller,Macadelic,2012-03-23,0.00766,0.739,0,0.656,-5.79,0.263,0.195,257331,TRUE,1,0,146.007,4
+The Mourning After,Mac Miller,Macadelic,2012-03-23,0.872,0.593,5.53e-4,0.432,-9.726,0.302,0.396,188065,TRUE,7,1,80.117,4
+1 Threw 8,Mac Miller,Macadelic,2012-03-23,0.0123,0.443,4.94e-5,0.115,-8.156,0.375,0.259,237076,TRUE,7,1,80.056,4
+Ignorant,Mac Miller,Macadelic,2012-03-23,0.0572,0.729,0,0.298,-6.526,0.19,0.459,213772,TRUE,4,1,133.96,4
+The Question,Mac Miller,Macadelic,2012-03-23,0.0555,0.736,0.00367,0.124,-6.088,0.109,0.265,371870,TRUE,10,1,134.99,4
+Angels (When She Shuts Her Eyes),Mac Miller,Macadelic,2012-03-23,0.158,0.528,1.89e-6,0.532,-6.318,0.206,0.222,203326,TRUE,11,1,139.786,4
+Sunlight,Mac Miller,Macadelic,2012-03-23,0.542,0.787,8.42e-5,0.298,-6.201,0.237,0.896,165299,TRUE,10,0,94.028,4
+Clarity,Mac Miller,Macadelic,2012-03-23,0.645,0.584,0.00154,0.113,-6.153,0.0552,0.162,275071,FALSE,1,1,82.001,4
+America,Mac Miller,Macadelic,2012-03-23,0.0552,0.793,0.248,0.112,-6.118,0.129,0.68,273305,TRUE,10,0,89.992,4
+Fuck 'Em All,Mac Miller,Macadelic,2012-03-23,0.2,0.66,4.39e-4,0.171,-7.436,0.307,0.25,263726,TRUE,4,1,153.984,4
+English Lane,Mac Miller,Blue Slide Park,2011-11-08,0.191,0.258,1.16e-6,0.0983,-9.501,0.0372,0.227,97285,TRUE,8,1,141.657,4
+Blue Slide Park,Mac Miller,Blue Slide Park,2011-11-08,0.0571,0.628,0,0.276,-5.629,0.282,0.16,149384,TRUE,0,0,95.515,4
+Party On Fifth Ave.,Mac Miller,Blue Slide Park,2011-11-08,0.0635,0.617,0,0.095,-5.21,0.328,0.663,173516,TRUE,9,1,97.67,4
+PA Nights,Mac Miller,Blue Slide Park,2011-11-08,0.409,0.517,0,0.101,-6.848,0.231,0.235,184675,TRUE,0,0,88.932,4
+Frick Park Market,Mac Miller,Blue Slide Park,2011-11-08,0.0225,0.592,0,0.293,-5.643,0.0598,0.227,197559,TRUE,6,1,156.125,4
+Smile Back,Mac Miller,Blue Slide Park,2011-11-08,2.83e-4,0.53,0,0.363,-6.547,0.156,0.235,162008,TRUE,2,1,151.349,4
+Under The Weather,Mac Miller,Blue Slide Park,2011-11-08,0.132,0.715,0,0.361,-5.426,0.163,0.606,260972,TRUE,10,1,119.994,4
+Of The Soul,Mac Miller,Blue Slide Park,2011-11-08,0.643,0.47,0,0.0593,-7.614,0.339,0.4,213303,TRUE,2,0,89.233,4
+My Team,Mac Miller,Blue Slide Park,2011-11-08,0.0422,0.698,0,0.157,-7.228,0.161,0.346,145127,TRUE,11,1,105.014,4
+Up All Night,Mac Miller,Blue Slide Park,2011-11-08,0.0108,0.655,0,0.333,-4.787,0.136,0.573,209287,TRUE,4,0,99.964,4
+Loitering,Mac Miller,Blue Slide Park,2011-11-08,0.144,0.572,0,0.0773,-4.188,0.312,0.731,191595,TRUE,4,1,148.05,4
+Hole In My Pocket,Mac Miller,Blue Slide Park,2011-11-08,0.423,0.237,0.481,0.0928,-18.19,0.0401,0.209,35723,TRUE,1,1,126.872,3
+Diamonds & Gold,Mac Miller,Blue Slide Park,2011-11-08,0.109,0.438,0,0.241,-6.883,0.346,0.462,197852,TRUE,5,0,175.876,4
+Missed Calls,Mac Miller,Blue Slide Park,2011-11-08,0.643,0.558,0,0.101,-10.37,0.163,0.464,178902,TRUE,5,1,169.859,4
+Man In The Hat,Mac Miller,Blue Slide Park,2011-11-08,0.545,0.777,0,0.0997,-8.025,0.203,0.546,196271,TRUE,7,1,128.218,4
+One Last Thing,Mac Miller,Blue Slide Park,2011-11-08,0.539,0.384,1.03e-6,0.135,-7.04,0.0938,0.22,178584,TRUE,9,1,100.744,4
+Kickin' Incredibly Dope Shit (Intro),Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.0445,0.477,0,0.256,-6.759,0.439,0.758,203359,TRUE,0,1,149.956,4
+Outside,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.00658,0.475,0,0.367,-3.779,0.132,0.27,217285,TRUE,7,1,80.155,4
+Get Em Up,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.366,0.639,0,0.157,-2.948,0.148,0.737,186238,TRUE,9,0,85.118,4
+Nikes On My Feet,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.559,0.801,0,0.111,-5.103,0.265,0.565,164631,TRUE,9,0,92.058,4
+Senior Skip Day,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.554,0.522,0,0.799,-5.184,0.306,0.809,175782,TRUE,5,0,108.364,4
+The Spins,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.0135,0.794,0,0.0785,-3.894,0.0377,0.55,195873,TRUE,9,0,127.007,4
+Don't Mind If I Do,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.15,0.736,0,0.301,-4.91,0.238,0.702,138287,TRUE,6,1,105.056,4
+Paper Route,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.0859,0.578,0,0.34,-5.059,0.29,0.573,171983,TRUE,1,1,80.917,4
+Good Evening,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.0496,0.531,0,0.363,-6.47,0.426,0.686,243066,TRUE,6,1,115.274,5
+Ride Around,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.033,0.759,0,0.31,-4.096,0.283,0.554,144400,TRUE,4,1,167.885,4
+Knock Knock,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.107,0.682,0,0.749,-2.527,0.151,0.484,197929,TRUE,4,0,109.029,4
+"Mad Flava, Heavy Flow (Interlude)",Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.392,0.599,0.0011,0.632,-4.659,0.424,0.943,26882,FALSE,8,0,94.084,3
+Kool Aid & Frozen Pizza,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.154,0.66,0,0.294,-4.57,0.301,0.706,157540,TRUE,11,1,89.768,4
+All I Want Is You,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.113,0.589,1.02e-4,0.129,-4.763,0.205,0.505,223248,TRUE,1,1,82.908,4
+Poppy,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.508,0.806,0,0.105,-5.791,0.291,0.459,172732,FALSE,9,1,94.618,4
+Face In The Crowd,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.23,0.394,0,0.254,-5.941,0.499,0.178,208792,TRUE,2,0,94.295,4
+Ayye,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.0613,0.764,0,0.0982,-6.939,0.0769,0.452,165910,TRUE,10,0,106.96,4
+Back In The Day,Mac Miller,K.I.D.S. (Deluxe),2010-08-13,0.118,0.691,1.03e-5,0.107,-7.963,0.275,0.411,246865,TRUE,6,1,82.273,4
