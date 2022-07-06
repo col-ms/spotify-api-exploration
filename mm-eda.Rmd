@@ -4,6 +4,28 @@ author: "Collin Smith"
 date: "7/6/2022"
 ---
 
+Welcome! If you haven't yet read section one of this series, I'd highly
+recommend you begin there before reading this section. If you've already done
+so, welcome back! In this section we will cover the EDA of the data collected,
+and use visualizations to get some information out of our data. In the next
+section, we'll use what we learned here to apply a clustering algorithm to
+the dataset and see if any interesting patterns emerge in the results.
+
+```{r libs-setup, echo = F, message = F}
+knitr::opts_chunk$set(fig.align = "center")
+ggplot2::theme_set(ggplot2::theme_minimal())
+library(tidyverse)
+library(plotly)
+```
+
+
+To begin, let's read in our dataframe that we saved at the end of section one.
+
+```{r read-dataframe}
+df <- read_csv("working-data.csv", show_col_types = F)
+```
+
+
 # Exploratory Data Analysis (EDA)
 
 With the data sorted and filtered to only include relevant variables, we are
@@ -93,33 +115,20 @@ df %>%
     album_release_date) %>%
   tally() %>%
   ggplot(
-    aes(
-      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date), 
-      y = n,
-      fill = album_name
-    )
-  ) +
+    aes(x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date), 
+        y = n,
+        fill = album_name)) +
   geom_col() +
-  geom_text(
-    aes(label = n), 
-    vjust = -0.2, 
-    size = 3.5
-  ) +
-  scale_y_continuous(
-    limits = c(0, 26)
-  ) +
-  labs(
-    x = "", 
-    y = "",
-    title = "Tracks Per Mac Miller Album",
-    subtitle = "Ordered by Release Date"
-  ) +
-  scale_fill_manual(
-    values = album_palette
-  ) +
-  theme(
-    legend.position = "none"
-  )
+  geom_text(aes(label = n), 
+            vjust = -0.2, 
+            size = 3.5) +
+  scale_y_continuous(limits = c(0, 26)) +
+  labs(x = "", 
+       y = "",
+       title = "Tracks Per Mac Miller Album",
+       subtitle = "Ordered by Release Date") +
+  scale_fill_manual(values = album_palette) +
+  theme(legend.position = "none")
 ```
 
 From this plot we can see that Mac's earlier albums tended to have a couple
@@ -209,9 +218,7 @@ album_trends <- df %>%
     .groups = "keep") %>%
   ggplot(
     aes(
-      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
-    )
-  )
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date)))
 
 avg_track_len_plot <- album_trends +
   geom_line(aes(y = average_track_length, group = 1)) +
@@ -294,25 +301,25 @@ tracks on each album.
 
 ```{r explicit-overview-plot}
 exp_plot <- df %>%
-  group_by(album_name, album_release_date) %>%
+  group_by(album_name, 
+           album_release_date) %>%
   count(explicit) %>%
   ggplot(
-    aes(
-      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
-      y = n,
-      fill = explicit
-    )
-  ) + 
-  geom_col(position = "fill", color = "black", alpha = 0.8, width = 0.95) +
+    aes(x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+        y = n,
+        fill = explicit)) + 
+  geom_col(position = "fill", 
+           color = "black", 
+           alpha = 0.8, 
+           width = 0.95) +
   labs(x = "",
        y = "",
        title = "Proportion of Explicit Tracks",
        subtitle = "Per Album, ordered by Release Date",
        fill = "Explicit") +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(
-    values = c("FALSE" = "lightgreen", "TRUE" = "coral")
-  ) +
+  scale_fill_manual(values = c("FALSE" = "lightgreen", 
+                               "TRUE" = "coral")) +
   theme(legend.position = c(0.725, 1.1),
         legend.direction = "horizontal",
         legend.box.background = element_rect(color = "lightgrey"))
@@ -356,14 +363,12 @@ or digital amplification (think grand piano versus digital keyboard).
 
 ```{r acousticness-explore, results = 'hide', fig.show = 'hold'}
 df %>% 
-  group_by(album_name, album_release_date) %>%
+  group_by(album_name, 
+           album_release_date) %>%
   ggplot(
-    aes(
-      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
-      y = acousticness,
-      fill = album_name
-    )
-  ) +
+    aes(x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+        y = acousticness,
+        fill = album_name)) +
   geom_boxplot() +
   labs(x = "",
        y = "",
@@ -375,12 +380,9 @@ df %>%
 df %>%
   group_by(album_name, album_release_date) %>%
   ggplot(
-    aes(
-      y = stringr::str_wrap(album_name, 28) %>% reorder(album_release_date),
-      x = acousticness,
-      fill = album_name
-    )
-  ) +
+    aes(y = stringr::str_wrap(album_name, 28) %>% reorder(album_release_date),
+        x = acousticness,
+        fill = album_name)) +
   ggridges::geom_density_ridges2() +
   labs(x = "",
        y = "",
@@ -390,11 +392,11 @@ df %>%
   theme(legend.position = "none")
 
 df %>%
-  group_by(album_name, album_release_date) %>%
-  summarise(
-    avg_acousticness = mean(acousticness)
-  ) %>%
-  ggplot(aes(x = album_release_date, y = avg_acousticness)) +
+  group_by(album_name, 
+           album_release_date) %>%
+  summarise(avg_acousticness = mean(acousticness)) %>%
+  ggplot(aes(x = album_release_date, 
+             y = avg_acousticness)) +
   geom_line(color = "lightblue", size = 1.5) +
   geom_point() +
   ggrepel::geom_text_repel(aes(label = album_name), force = ) +
@@ -438,7 +440,8 @@ df %>%
   gather() %>%
   mutate(key = factor(key)) %>%
   filter(value > 0.1) %>%
-  ggplot(aes(x = value, color = key)) +
+  ggplot(aes(x = value, 
+             color = key)) +
   geom_density(size = 1.25) +
   labs(x = "Value",
        y = "Density",
@@ -460,6 +463,115 @@ the y-axis by far too much for the rest of the density curves to be observed.
 Here we will be investigating some of the questions posed above by looking at
 the interaction between specific variables.
 
-```{r}
-
+```{r danceability-energy-plot}
+df %>%
+  select(danceability, energy) %>%
+  ggplot(aes(x = danceability,
+             y = energy)) +
+  geom_point() +
+  lims(x = c(0, 1), 
+       y = c(0, 1)) +
+  labs(x = "Danceability",
+       y = "Energy",
+       title = "Energy vs. Danceability Scatter Plot")
 ```
+```{r tempo-energy}
+df %>%
+  select(tempo, energy) %>%
+  ggplot(aes(x = tempo,
+             y = energy)) +
+  geom_point() +
+  labs(x = "Tempo",
+       y = "Energy",
+       title = "Does higher Tempo = higher energy?")
+```
+
+From this plot, it appears that there is *not* any strong relationship between
+**tempo** and **energy**, as previously theorized.
+
+```{r tempo-valence}
+df %>%
+  select(tempo, valence) %>%
+  ggplot(aes(x = tempo,
+             y = valence)) +
+  geom_point() +
+  labs(x = "Tempo",
+       y = "Energy",
+       title = "Does higher Tempo = higher valence?")
+```
+
+The same statement holds true for **tempo** and **valence**. There is no
+discernible pattern to be identified here.
+
+```{r tempo-danceability}
+df %>%
+  select(tempo, danceability) %>%
+  ggplot(aes(x = tempo,
+             y = danceability)) +
+  geom_point() +
+  labs(x = "Tempo",
+       y = "Energy",
+       title = "Does higher Tempo = higher danceability?")
+```
+
+Once again, no clear pattern is shown, this time between **tempo** and
+**danceability**.
+
+### Correlation Plot
+
+To get a better idea of how these variables are connected, if at all, we can
+use a correlation plot. These are a great way to invesitgate connectivity 
+across variables and understand how they influence each other.
+
+```{r corr-lib, message = F}
+library(corrplot)
+```
+
+```{r corr-plot}
+df_corrs = cor(select(df, where(is.numeric)))
+corrplot(df_corrs, method = "square")
+```
+
+This is great! We don't have very much correlation at all, which means each
+measure provides valuable information about the observation. There are only a
+few instances of correlation, such as a negative correlation between 
+**loudness**, and **acousticness**, and another negative correlation between
+**energy** and **acousticness**. This does sort of make sense - a track that
+has a high value for the **acousticness** measure is likely using less
+electronic amplification, and as such would probably be a little quieter, and
+so would have a lower **loudness** measure. The interaction between **energy**
+and **acousticness** is a little more surprising to me, but the best I can
+interpret it is that Mac tended to use more acoustic sounds in his more somber,
+or laid-back tracks. We also see one positive correlation between **loudness**
+and **energy**. Let's take a quick look at a scatter plot of those two variables
+to further investigate.
+
+```{r energy-loudness-plot}
+df %>%
+  select(energy, loudness) %>%
+  ggplot(aes(x = loudness,
+             y = energy)) +
+  geom_point() +
+  labs(x = "Loudness (dB)",
+       y = "Energy",
+       title = "Energy as a function of Loudness")
+```
+
+Wow! That is a pretty strong correlation for sure. That tight grouping of points
+shows that there is a very well-defined relationship between **loudness** and
+**energy**. As both of these variables also have a negative correlation with
+**acousticness**, we really only need to keep one of them moving forward. By
+using the correlation plot from before, we can see that **loudness** has lower
+correlations across the board, so we'll keep that going into the next section.
+
+```{r}
+df <- select(df, -energy)
+write_csv(df, "section-two-end-df.csv")
+```
+ 
+Thanks for reading this section! The third and final section of this project
+will revolve around applying a clustering algorithm to this data to see what
+kind of groups emerge. I'm hoping to get some clusters that include tracks from
+a couple different albums to see if some signatures of Mac's music are
+identifiable over his career.
+ 
