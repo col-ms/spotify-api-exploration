@@ -9,10 +9,6 @@
     
     toc: true
     toc_depth: 4
-    toc_float: true
-    
-    code_folding: show
-    code_download: true
     
     df_print: tibble
 
