@@ -1,0 +1,465 @@
+---
+title: "Spotify Data EDA"
+author: "Collin Smith"
+date: "7/6/2022"
+---
+
+# Exploratory Data Analysis (EDA)
+
+With the data sorted and filtered to only include relevant variables, we are
+now ready to begin using statistical summaries and creating visualizations
+to glean insights from. We will be exploring the data to discover patterns, 
+identify anomalies (or outliers), and to make some informed observations that
+will help us to better understand the dataset.
+
+## Statistical Summary
+
+We'll start our analysis by looking at a basic statistical summary of the
+quantitative variables in our dataset. We can easily find what variables to 
+include by using a `select()` statement.
+
+```{r stat-summ}
+df %>% 
+  select(where(is.numeric)) %>%
+  summary()
+```
+
+These values tell us some great cursory information about the data.
+
+**Some observations:**
+
+* **acousticness** has the widest range of all Spotify's metrics, but the mean
+and 3rd quartile suggest the max may be an anomaly
+* **danceability** and **energy** have relatively similar summaries, suggesting
+possible correlation between the two. Values tend to trend upwards, indicating
+the minimum value in both of these variables may be outliers (potentially even
+the same track? worth investigating)
+* **instrumentalness** doesn't contain any values > 0.5, Spotify's threshold 
+intended to represent instrumental tracks, as per their documentation linked
+above. This suggests the discography does not contain any purely instrumental
+tracks
+* **liveness** having a max of ``r max(df$liveness)`` suggests Spotify is 
+confident that at least one track was performed live (documentation lists 0.8
+as the likelihood threshold). This max is very far from the rest of the measures
+for **liveness**, indicating a likely outlier
+* **loudness**, measured in decibels (dB) also has a relatively wide range, 
+with all values < 0. Spotify lists typical range as falling between -60 and 0, 
+suggesting Mac's music trends towards the upper side of this traditional range
+* **speechiness** tends to be lower than Spotify's typical value range for rap
+music (0.33 - 0.66 as per documentation). This suggests Mac's tracks have more
+sections that do not contain vocals in them. Investigating this on a per-album
+basis could yield interesting findings
+* **valence** sees a wide range of values, with the mean and median falling just
+under the halfway point between the min and max. However, the 3rd quartile value
+tells us that the max value is likely an anomaly
+* **duration_ms** seems to hold a rather tight distribution for the most part, 
+with both the min and the max values seemingly pretty distant from the typical
+values in the variable
+* **tempo** holds some surprising values. The mean and median suggest that ~120
+is Mac's typical tempo, which is higher than the 
+[average hip-hop tempo range](https://www.izotope.com/en/learn/using-different-tempos-to-make-beats-for-different-genres.html).
+The linked source offers that typically, the higher the beats per minute (BPM),
+or tempo, the more energy and uplifting a track is. Knowing this, it would be 
+interesting to investigate the relationship between **tempo**, **energy**,
+**valence**, and **danceability**. I'd expect, at the very least, a weak 
+positive correlation between all those variables
+
+## Visualizations
+
+### Per Album Plots
+
+This section will focus on some simple but important plots, mostly involving 
+counts and frequencies of measures. This will give a good overview of our data 
+at a high level before we delve into specifics and multivariate interactions.
+
+```{r album-track-counts}
+album_palette = c(
+  "K.I.D.S. (Deluxe)" = "#387228",
+  "Best Day Ever" = "#C315AA",
+  "Blue Slide Park" = "#3540F2",
+  "Macadelic" = "#767092",
+  "Watching Movies with the Sound Off (Deluxe Edition)" = "#DA252A",
+  "Live From Space" = "#FE675C",
+  "Faces" = "#FDBB1E",
+  "GO:OD AM" = "#A2A2A2",
+  "The Divine Feminine" = "#DDC1BE",
+  "Swimming" = "#668099",
+  "Circles (Deluxe)" = "#464646"
+  )
+
+df %>% 
+  group_by(
+    album_name,
+    album_release_date) %>%
+  tally() %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date), 
+      y = n,
+      fill = album_name
+    )
+  ) +
+  geom_col() +
+  geom_text(
+    aes(label = n), 
+    vjust = -0.2, 
+    size = 3.5
+  ) +
+  scale_y_continuous(
+    limits = c(0, 26)
+  ) +
+  labs(
+    x = "", 
+    y = "",
+    title = "Tracks Per Mac Miller Album",
+    subtitle = "Ordered by Release Date"
+  ) +
+  scale_fill_manual(
+    values = album_palette
+  ) +
+  theme(
+    legend.position = "none"
+  )
+```
+
+From this plot we can see that Mac's earlier albums tended to have a couple
+more songs than his later releases, with *Faces* being the outlier of the
+discography as a whole. This could partly be due to *Faces* originally being
+released as a mixtape rather than a formal album, so perhaps it did not go
+through the same revision processes that an album might see before release.
+
+#### Duration {.tabset .tabset-fade}
+
+Let's also take a look at track duration trends for each album, as well as each
+album's total runtime.
+
+##### Overview
+
+```{r track-duration-by-album}
+df %>%
+  group_by(album_name) %>%
+  ggplot(aes(
+    x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+    y = duration_ms,
+    fill = album_name)) +
+  geom_boxplot() +
+  geom_point(alpha = 0.4, shape = "diamond") +
+  labs(x = "",
+       y = "Track Duration (ms)",
+       title = "Track Duration by Album") +
+  scale_fill_manual(values = album_palette) +
+  theme(legend.position = "none")
+```
+
+This plot tells us that even though they typically had fewer tracks on them, 
+Mac's later albums contained tracks that, on average, were longer than tracks on
+earlier albums. This can almost be thought of as a focus on "quality over
+quantity" when it comes to the later albums. Furthermore, the plot shows that
+earlier albums had less variation in track duration, while later albums saw
+more variety. It is interesting to see how *The Divine Feminine*, the album
+with the fewest tracks, not only contains the longest track in the dataset, but
+also two tracks that are significantly longer than the rest of the album. This
+could very well be an example of careful song selection to help each album
+maintain a relatively similar total runtime. We'll examine that below.
+
+```{r album-runtimes}
+df %>%
+  group_by(album_name) %>%
+  summarise(album_name, 
+            runtime = sum(duration_ms), 
+            album_release_date,
+            .groups = "keep") %>%
+  ggplot(aes(
+    x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+    y = runtime,
+    fill = album_name)) +
+  geom_col() +
+  labs(x = "",
+       y = "Runtime (ms)",
+       title = "Total Album Runtimes") +
+  scale_fill_manual(values = album_palette) +
+  theme(legend.position = "none")
+```
+
+By comparing this plot with the information about each album's number of tracks,
+we can see that there is a very clear correlation between number of tracks and
+album runtime. For example, even though *K.I.D.S.* has a lower average track
+duration than *Swimming*, the total runtime is still longer for *K.I.D.S.*, due
+to the difference in track count. Generally, longer albums are subject to a bit
+more criticism, as too long of a runtime can start to make the listener become
+disinterested if the music doesn't provide enough variation. Knowing this, it
+again makes sense that *Faces* has such a higher runtime than any other work, as
+it's original release as a mixtape meant that it didn't go through the same
+revisions and polishing processes that formal albums do. This runtime plot also
+confirms our previous theory of Mac's later albums revolving more around the
+substance of each individual track rather than making a longer, less focused 
+album. We can also see from the plot that the concept of keeping longer songs
+on *The Divine Feminine* does not really appear to have had a substantial 
+impact on the album's total runtime, as it is still significantly shorter than
+all other works.
+
+```{r album-trends, results = 'hide', fig.show = 'hold', message = F}
+album_trends <- df %>%
+  group_by(album_name) %>%
+  summarise(
+    album_name,
+    album_release_date,
+    average_track_length = mean(duration_ms),
+    track_count = n(),
+    .groups = "keep") %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+    )
+  )
+
+avg_track_len_plot <- album_trends +
+  geom_line(aes(y = average_track_length, group = 1)) +
+  geom_point(aes(y = average_track_length)) +
+  geom_smooth(
+    aes(y = average_track_length, group = 1), 
+    method = "lm",
+    formula = y ~ x,
+    alpha = 0.5,
+    lty = "dotted",
+    se = FALSE) +
+  labs(x = "",
+       y = "Average Duration (ms)",
+       title = "Average Track Duration Trend") +
+  scale_y_continuous(
+    breaks = c(2e+05, 2.4e+05, 2.8e+05, 3.2e+05),
+    labels = c("200K", "240K", "280K", "320K"))
+
+total_tracks_plot <- album_trends +
+  geom_line(aes(y = track_count, group = 1)) +
+  geom_point(aes(y = track_count)) +
+  geom_smooth(
+    aes(y = track_count, group = 1), 
+    method = "lm",
+    formula = y ~ x,
+    alpha = 0.5,
+    lty = "dotted",
+    se = FALSE) +
+  labs(x = "",
+       y = "Tracks Per Album",
+       title = "Tracks per Album Trend")
+
+avg_track_len_plot
+total_tracks_plot
+
+```
+
+While not too severe, these plots reveal that over the course of his career,
+Mac's albums tended to contain less songs, but those songs were of longer
+duration.
+
+##### Album-Specific
+
+```{r track-durations-by-album, results = 'hide', fig.keep = 'all'}
+album_names <- arrange(df, df$album_release_date) %>% 
+  .$album_name %>% 
+  unique()
+
+figures = list()
+
+for(i in album_names){
+  
+  figures[[i]] <- df %>%
+    filter(album_name == i) %>%
+    ggplot(
+      aes(x = reorder(fct_inorder(track_name), desc(fct_inorder(track_name))), 
+          y = duration_ms, fill = i)) +
+    geom_col() +
+    labs(x = "",
+         y = "Track Duration (ms)",
+         title = i) +
+    scale_y_continuous(limits = c(0, 5.5e+05)) +
+    coord_flip() +
+    #ggthemes::theme_clean() +
+    scale_fill_manual(values = album_palette) +
+    theme(legend.position = "none",
+          plot.title.position = "plot")
+  
+}
+
+aligned_figs <- cowplot::align_plots(plotlist = figures, align = "v")
+
+lapply(aligned_figs, function(x) {cowplot::ggdraw(x)})
+```
+
+#### Explicitness
+
+Let's take a quick look at the proportion of explicit and non-explicit (clean)
+tracks on each album.
+
+```{r explicit-overview-plot}
+exp_plot <- df %>%
+  group_by(album_name, album_release_date) %>%
+  count(explicit) %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+      y = n,
+      fill = explicit
+    )
+  ) + 
+  geom_col(position = "fill", color = "black", alpha = 0.8, width = 0.95) +
+  labs(x = "",
+       y = "",
+       title = "Proportion of Explicit Tracks",
+       subtitle = "Per Album, ordered by Release Date",
+       fill = "Explicit") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(
+    values = c("FALSE" = "lightgreen", "TRUE" = "coral")
+  ) +
+  theme(legend.position = c(0.725, 1.1),
+        legend.direction = "horizontal",
+        legend.box.background = element_rect(color = "lightgrey"))
+
+exp_table <- df %>%
+  group_by(album_name) %>%
+  summarise(n_tracks = n(),
+            n_explicit = sum(explicit == TRUE),
+            prop_explicit = round(n_explicit / n_tracks, 2),
+            album_release_date,
+            .groups = "keep") %>%
+  arrange(album_release_date) %>%
+  distinct() %>%
+  select("Album Name" = album_name,
+         "Track Count" = n_tracks,
+         "Explicit Tracks" = n_explicit,
+         "Prop. Explicit" = prop_explicit)
+
+exp_plot
+exp_table
+```
+
+Some observations from this plot and table:
+
+* All but one of the albums contained a proportion of explicit tracks >= 0.8
+* *Circles*, Mac's last album is the only work that contains more clean
+tracks than explicit tracks
+
+#### Acousticness
+
+Per Spotify's 
+[documentation](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features),
+**acousticness** is "*A confidence measure from 0.0 to 1.0 of whether or not 
+the track is acoustic. 1.0 represents high confidence that the track is 
+acoustic. According to 
+[Wikipedia](https://en.wikipedia.org/wiki/Acoustic_music),
+acoustic music is generally thought of as music that primary features
+features that produce sound through physical properties, as opposed to electric
+or digital amplification (think grand piano versus digital keyboard). 
+
+
+```{r acousticness-explore, results = 'hide', fig.show = 'hold'}
+df %>% 
+  group_by(album_name, album_release_date) %>%
+  ggplot(
+    aes(
+      x = stringr::str_wrap(album_name, 9) %>% reorder(album_release_date),
+      y = acousticness,
+      fill = album_name
+    )
+  ) +
+  geom_boxplot() +
+  labs(x = "",
+       y = "",
+       title = "Summary of Acousticness",
+       subtitle = "Per Album, ordered by Release Date") +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = album_palette)
+
+df %>%
+  group_by(album_name, album_release_date) %>%
+  ggplot(
+    aes(
+      y = stringr::str_wrap(album_name, 28) %>% reorder(album_release_date),
+      x = acousticness,
+      fill = album_name
+    )
+  ) +
+  ggridges::geom_density_ridges2() +
+  labs(x = "",
+       y = "",
+       title = "Density of Acousticness Measures",
+       subtitle = "Per Album") +
+  scale_fill_manual(values = album_palette) +
+  theme(legend.position = "none")
+
+df %>%
+  group_by(album_name, album_release_date) %>%
+  summarise(
+    avg_acousticness = mean(acousticness)
+  ) %>%
+  ggplot(aes(x = album_release_date, y = avg_acousticness)) +
+  geom_line(color = "lightblue", size = 1.5) +
+  geom_point() +
+  ggrepel::geom_text_repel(aes(label = album_name), force = ) +
+  labs(y = "Acousticness",
+       x = "Album Release Year",
+       title = "Average Acousticness Per Album",
+       subtitle = "Ordered by Release Date")
+```
+
+From these plots we can see a clear trend of increasing **acousticness** towards
+the later works of Mac's career. We can also see greater variation in the 
+values of later albums, suggesting the possibility of more distinct sonic 
+changes from album to album later in his career.
+
+### Measure Distributions
+
+This section will focus on displaying some simple yet informative information
+regarding Spotify's quantitative metrics:
+
+* **acousticness**
+* **danceability**
+* **energy**
+* **instrumentalness**
+* **liveness**
+* **speechiness**
+* **valence**
+
+```{r spot-measure-density}
+measures <- c(
+  "acousticness",
+  "danceability",
+  "energy",
+  "instrumentalness",
+  "liveness",
+  "speechiness",
+  "valence"
+)
+
+df %>%
+  select(all_of(measures)) %>%
+  gather() %>%
+  mutate(key = factor(key)) %>%
+  filter(value > 0.1) %>%
+  ggplot(aes(x = value, color = key)) +
+  geom_density(size = 1.25) +
+  labs(x = "Value",
+       y = "Density",
+       color = "Measure",
+       title = "Spotify Measure Density Plot") +
+  scale_color_brewer(type = "qual", palette = 7)
+```
+
+From this plot, we can see that **danceability** and **energy** seem to have
+very similar density curves. It is definitely worth investigating if there is
+any correlation between those two measures. Additionally, within the code to
+construct the plot, you'll notice there is a `filter()` statement to set the
+lower limit of the values to 0.1. This was done to exclude the enormous amount
+of **instrumentalness** observations that lie between 0 and 0.1, which stretched
+the y-axis by far too much for the rest of the density curves to be observed.
+
+### Multivariate Plots
+
+Here we will be investigating some of the questions posed above by looking at
+the interaction between specific variables.
+
+```{r}
+
+```

@@ -1,0 +1,404 @@
+---
+title: "Exploring Mac Miller's Discography with Spotify API"
+author: "Collin Smith"
+date: '2022-05-19'
+---
+
+```{r chunk-setup, echo = F}
+knitr::opts_chunk$set(fig.align = "center")
+ggplot2::theme_set(ggplot2::theme_minimal())
+```
+
+
+# Welcome!
+
+Hello, and welcome to my very first Markdown publication. 
+The vast majority of my time spent with R has been for university courses, so
+I thought it would be a good change of pace to apply the skills I've learned
+to a personal project. I have learned a great deal from books like 
+Hadley Wickham's [R for Data Science](https://r4ds.had.co.nz/), as well as 
+tutorials, articles, and markdown pages from sites such as 
+[RPubs](https://rpubs.com/), [R-bloggers](https://www.r-bloggers.com/), 
+and [Towards Data Science](https://towardsdatascience.com/). 
+My hope is that this project can in turn be used to help someone else down 
+the road, as others have helped me.
+
+In this project, we will be exploring how to use Spotify's API and 
+the **spotifyr** package to access data about a particular artists discography. 
+We'll also be utilizing the **geniusr** package to retrieve lyrics for 
+songs, allowing for sentiment to be explored and visualized, and doing our best
+to apply a clustering algorithm to the discography.
+
+# Spotify API Credentials
+
+To begin, we will first need to head over to the 
+[Spotify for Developers](https://developer.spotify.com/dashboard/) page, 
+where we will be registering an application to obtain an API key. Once you've 
+logged in, select "Create an App" and fill out the required fields. Completing 
+this will give you access to two important fields: your **client id** and 
+your **client secret** (or API key). These fields will be used to let the
+API know who is accessing it and that you have proper authentication. 
+To get started, first install the **spotifyr** package if you don't already
+have it.
+
+```{r pkg-install, eval = F, include = T}
+install.packages("spotifyr")
+```
+
+Next, we can use the following code to pass out authentication credentials
+to the API, giving us access.
+
+```{r auth-example, eval = F, include = T}
+Sys.setenv(SPOTIFY_CLIENT_ID = 'your client id')
+Sys.setenv(SPOTIFY_CLIENT_SECRET = 'your client secret')
+access_token <- get_spotify_access_token()
+```
+
+```{r auth-actual, eval = T, echo = F}
+source('auth_func.R')
+authenticate()
+```
+
+# Gathering the Data
+
+Now that you are authenticated with the API, we can begin using the 
+**spotifyr** package's functions to retrieve information.
+In this project, we will be analyzing Mac Miller's discography and exploring 
+how his sound changed throughout his career. To get information regarding 
+a single artist's discography, we can use the `get_artist_audio_features()` 
+function. The function will return a dataframe containing information about all 
+of the artists' music that is hosted on Spotify. The function takes many 
+possible arguments, but for the sake of this project, we only need to pass in 
+one: the name of the artist for which we wish to get information.
+
+```{r get-data, echo = T}
+library(spotifyr)
+mm_data <- get_artist_audio_features(artist = "Mac Miller")
+```
+
+To check that this function performed as expected, let's take a very quick
+glance at the returned dataframe.
+
+```{r data-check, echo = T}
+colnames(mm_data)
+unique(mm_data$album_name)
+head(mm_data$track_name, 15)
+dim(mm_data)
+```
+
+Excellent! The returned dataframe contains ``r dim(mm_data)[1]`` observations,
+or in this case songs, and each observation has ``r dim(mm_data)[2]`` variables.
+
+# Checking the Data
+
+We can see from the `unique(mm_data$album_name)` function that the albums are
+listed in order of upload date, with Faces being the most recent album added
+to Mac's Spotify page. While this may seem handy, it is important to note that
+the order in which albums are uploaded to Spotify is not always the same order
+that the albums were released. We can observe this by taking a look at the
+`album_release_date` variable.
+
+```{r libs, message = F}
+library(tidyverse)
+library(plotly)
+```
+
+```{r album-dates, echo = T}
+mm_data %>% 
+  select(album_name, album_release_date) %>%
+  distinct()
+```
+
+This readout implies that Faces is the most recent album to release. However,
+by checking Mac's 
+[discography](https://en.wikipedia.org/wiki/Mac_Miller_discography), we can see
+that Faces was actually released as a mixtape back in 2014, much earlier than
+the variable from Spotify's data would suggest. Since this project involves 
+analyzing how Mac's music changed throughout the duration of his career, it is
+important to have accurate ordering of dates associated with the albums.
+
+## Webscraping
+
+To remedy this, we can use some quick web scraping to pull the release dates 
+from the wiki page and amend the data.
+
+```{r wiki-scrape, message = F}
+# run install.packages('rvest') if you don't have this package already
+library(rvest)
+url <- "https://en.wikipedia.org/wiki/Mac_Miller_discography"
+wp <- read_html(url)
+rel_dates <- html_nodes(
+  wp, "th i , .plainrowheaders th+ td li:nth-child(1) , th i a") %>%
+  html_text()
+```
+
+Now, the above code may look a little intimidating if you are new to
+webscraping. That's okay, it looks much scarier than it really is. The
+`read_html()` function simply reads the page's html code and stores it as a 
+list in your R environment. Then, we need to tell R what parts of the webpage
+we want extracted. To do this, I used the 
+[SelectorGadget](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb?hl=en) extension for Chrome. Using the tool makes webscraping
+very simple, you just highlight the elements you wish to capture and the tool
+will give you the CSS selector for it. That is how the arguments you see in the
+`html_nodes()` function were found. Once you've identified the nodes, pass the
+results to the `html_text()` function and voila! You know have text from a
+website stored right in your R environment.
+
+Let's check out what our scraping resulted in:
+
+```{r chk-scrape}
+head(rel_dates, 20)
+```
+
+### Cleaning the scraped data
+
+While that looks pretty good, you can see that the album titles are listed
+twice, and the release dates could be formatted a little nicer. Let's fix that
+up to a nicer format.
+
+```{r scrape-cleaning}
+# Remove duplicates and format into dataframe for manipulation
+rel_dates <- matrix(
+  unique(rel_dates), ncol = 2, byrow = T) %>%
+  as.data.frame()
+
+# Filter out any works that aren't hosted on Spotify
+rel_dates <- rel_dates %>% filter(
+  V1 %>% tolower() %in% (unique(mm_data$album_name) %>% 
+                    gsub("( \\().*", "", .) %>%
+                    tolower()))
+
+# Cleaning date text
+rel_dates$V2 <- gsub("(?:Released: )", "", rel_dates$V2)
+rel_dates$V2 <- gsub(".{4}$", "", rel_dates$V2)
+
+# Converts textual dates to date type object
+rel_dates$V2 <- lubridate::parse_date_time(
+  rel_dates$V2, orders = "mdy") %>%
+  lubridate::as_date()
+
+# Check results to ensure they look as expected
+rel_dates
+```
+
+## Prepping for Merge
+
+Now our release dates are in a more workable format. However, before we merge
+the two datasets, let's first take one more look at the album names in our 
+main dataframe, `mm_data`. 
+
+```{r album-name-check}
+unique(mm_data$album_name)
+```
+
+We see from this readout that many albums contain multiple editions, such as
+deluxe releases, remasters, or commentary bonuses. To prevent our analysis from
+being biased towards those repeated works, we should selectively filter out 
+albums that are listed multiple times. Firstly, the commentary version of
+Blue Slide Park will be omitted. Next, for any album that has a deluxe release,
+we will keep only the deluxe release, dropping the original album from the
+dataset. Lastly, we will rename 
+*Best Day Ever (5th Anniversary Remastered Edition)* and
+*Macadelic (Remastered Edition)*. 
+This will help us when merging the datasets.
+
+```{r pre-merge-cleaning}
+# Shortening 'Best Day Ever' album name for merging
+mm_data$album_name[
+  mm_data$album_name == 
+  "Best Day Ever (5th Anniversary Remastered Edition)"] = "Best Day Ever"
+
+# Dropping '(Remastered Edition)' from Macadelic
+mm_data$album_name[
+  mm_data$album_name == 
+  "Macadelic (Remastered Edition)"] = "Macadelic"
+
+# Drop any non-deluxe editions of albums that have deluxe editions
+# Note that Blue Slide Park's additional versions were also dropped
+# Live From London was dropped as it only included already present songs
+mm_data <- filter(mm_data, !(album_name %in% c(
+  "Circles", 
+  "Watching Movies with the Sound Off", 
+  "K.I.D.S.",
+  "Mac Miller : Live From London (With The Internet)",
+  "Blue Slide Park (Commentary Version)",
+  "Blue Slide Park (Edited Version)")))
+
+# Adding " (Deluxe)" onto album names in true release date set for merging
+for(i in c(2, 6, 8)){
+  if(i == 2){
+    rel_dates$V1[i] = str_c(rel_dates$V1[i], " (Deluxe Edition)")}
+  else
+    rel_dates$V1[i] = str_c(rel_dates$V1[i], " (Deluxe)")}
+
+# Adjusting Capitalization of "Live from Space" to match mm_data$album_name
+rel_dates$V1[rel_dates$V1 == "Live from Space"] = "Live From Space"
+```
+
+## Merging the Data
+
+Now that our extra versions have been dropped from the data, we can finally
+merge our two datasets to attach the accurate release dates.
+
+```{r date-combine}
+# Performing the merge of the two datasets
+mm_data <- left_join(mm_data, rel_dates,
+                     by = c("album_name" = "V1"))
+mm_data <- mm_data %>% rename("true_rel_date" = "V2")
+```
+
+With the merge complete, let's take a look at the differences between the
+original `album_release_date` column and our new `true_rel_date` column.
+
+```{r rel-date-comp}
+select(mm_data, album_release_date, album_name, true_rel_date) %>%
+  unique()
+```
+
+Excellent! Now that we have each album's true release date, we can go ahead and
+drop the old variable `album_release_date` and rename our new variable to take
+its place.
+
+```{r rel-date-swap}
+mm_data <- select(mm_data, -album_release_date) %>% 
+  rename(album_release_date = true_rel_date)
+```
+
+## Filtering the Data
+
+### Handling Duplicates
+
+Before we head into the next step in our analysis, let's first make sure that we
+don't have multiple entries of any tracks.
+
+```{r dupe-check}
+mm_data$track_name[duplicated(mm_data$track_name)]
+```
+
+Good thing we checked! 27 duplicate entries is no joke, so let's figure out how
+this happened. Familiarity with Spotify and Mac's library leads me to initially
+suspect that these tracks appear on both an explicit and clean versions of
+their respective albums. We can check this assumption rather quickly, so let's 
+do so.
+
+```{r dupe-investigation}
+mm_data %>% 
+  filter(
+    track_name %in% (mm_data$track_name[duplicated(mm_data$track_name)])) %>%
+  select(track_name, album_name, explicit) %>%
+  arrange(album_name)
+```
+
+As expected, it looks like the duplicate entries stem from clean editions of
+albums. To handle this, we can first double-check that aside from the clean
+albums, every album in the dataset contains at least one explicit song. If so,
+then we can group the observations by album and simply drop any album that
+contains no explicit tracks.
+
+```{r explicit-check}
+# note we use album_id here because it is unique for explicit and clean versions
+mm_data %>%
+  group_by(album_id, album_name) %>%
+  count(explicit == TRUE) %>%
+  arrange(album_name)
+```
+
+We can see here that the only albums with two different entries for **album_id**
+are *GO:OD AM* and *The Divine Feminine*. These entries represent the explicit
+and clean editions of the albums. To handle this, we can simply filter out
+any entry that matches the **album_id** value of the clean editions of these
+albums.
+
+```{r}
+mm_data <- mm_data %>%
+  filter(!album_id %in% c("6lEUoXk2C9IpUWPd4caiNE", "4gtXD5SL0yysd1eRIrDpnZ"))
+```
+
+
+## Variable Selection
+
+Now that our release date and duplicate entry issues have been solved, let's 
+take a look at which variables we'd like to keep, and which ones we can exclude 
+moving forward.
+
+```{r df-name-list}
+print(names(mm_data))
+```
+
+As we can see, there are quite a few variables in the set. To get an idea of
+what each variable holds, we can use *tidyverse*'s `glimpse()` function.
+
+```{r data-glimpse}
+glimpse(mm_data)
+```
+
+Wow! That's a lot of info. To make things a little simpler, we can refer to
+[Spotify's API documentation](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features)
+to get a better idea of what these variables represent. Some variables are 
+rather self-explanatory, such as `artist_name`, `track_name`, `album_name`, and
+`duration_ms`. For this analysis, we want to keep identifying information such
+as a tracks name, the album it came from, and the release date. The other
+variables we'll want to keep are measures about the songs sonic signature. These
+measures include `danceability`, `energy`, `loudness`, `speechiness`,
+`acousticness`, `instrumentalness`, `liveness`, and `valence`. These are metrics
+provided by Spotify that give quantitative measures of a track's audio
+characteristics. More information on these metrics and how they are derived can
+be found at [Spotify's API documentation](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features).
+Other variables we'll want to keep are `key`, `mode`, `tempo`, `time_signature`,
+`duration_ms`, and `explicit`. These variables provide more information about
+the composition of the song.
+
+Now that we've identified the variables we want to keep in our working data, we
+can go ahead and create a filtered version of the full data to move forward
+with. We can also take this opportunity to reorder our variables into more 
+organized groups.
+
+```{r select-variables}
+df <- mm_data %>% select(
+  # identifying information
+  track_name,
+  artist_name,
+  album_name,
+  album_release_date,
+  # spotify provided quantitative measures
+  acousticness,
+  danceability,
+  energy,
+  instrumentalness,
+  liveness,
+  loudness,
+  speechiness,
+  valence,
+  # composition information
+  duration_ms,
+  explicit,
+  key,
+  mode,
+  tempo,
+  time_signature
+)
+```
+
+```{r format-cleaning}
+# quickly formatting key, mode, and time signature as factors
+df <- df %>% mutate(across(c(key, mode, time_signature), as.factor))
+```
+
+To keep these posts from getting too long, I've decided to break up the project
+into sections. Let's recap what we did in this first section: we authenticated
+our program with the Spotify API, we retrieved the data for the artist we
+wanted, we corrected some data using an external source, and we formatted the
+data into a workable form for analysis and clustering. That's quite a lot in
+just the first section! 
+
+Section two will cover the exploratory data analysis, or
+EDA, where we'll take a look at the data through visualizations and draw 
+insights from various plots. However, before we go, let's remember to save
+our dataframe that we created so we don't have to go through these steps again!
+
+```{r save-dataframe}
+write_csv(df, "working-data.csv")
+```
+
+
+Thanks for reading!
