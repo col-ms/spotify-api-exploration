@@ -137,7 +137,8 @@ webscraping. That's okay, it looks much scarier than it really is. The
 `read_html()` function simply reads the page's html code and stores it as a 
 list in your R environment. Then, we need to tell R what parts of the webpage
 we want extracted. To do this, I used the 
-[SelectorGadget](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb?hl=en) extension for Chrome. Using the tool makes webscraping
+[SelectorGadget](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb?hl=en) 
+extension for Chrome. Using the tool makes webscraping
 very simple, you just highlight the elements you wish to capture and the tool
 will give you the CSS selector for it. That is how the arguments you see in the
 `html_nodes()` function were found. Once you've identified the nodes, pass the
@@ -399,6 +400,5 @@ our dataframe that we created so we don't have to go through these steps again!
 ```{r save-dataframe}
 write_csv(df, "working-data.csv")
 ```
-
 
 Thanks for reading!
