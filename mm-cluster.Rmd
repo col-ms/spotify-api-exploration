@@ -1,0 +1,71 @@
+---
+title: "Spotify Data Clustering"
+author: "Collin Smith"
+date: '2022-07-09'
+---
+
+# Welcome!
+
+This is the third and final section of my introductory look at exploring the
+Spotify API using R. If you haven't already read through sections one and two,
+where we cover accessing, cleaning, and visualizing the data, I'd strongly
+recommend you begin with those before reading this section. If you're coming
+from there, welcome back, and let's continue!
+
+In this section we will be applying a clustering algorithm to the data we've 
+collected to see if any interesting patterns emerge in the results. We'll be
+using k-means clustering, probably the most common clustering algorithm out,
+and for good reason! It's simple, easy to interpret, and not too computationally
+expensive. All around, a very good place to start, so let's go ahead and dive 
+right in!
+
+# Standarding the Data
+
+Before we can actually apply the clustering, we first need to ensure that all
+of the data we'll be working with has been scaled to have the same range. This
+helps the clustering algorithm treat each variable equally instead of weighting
+certain variables higher or lower when determining what cluster an observation
+should be placed in. To do this, we'll be applying a technique called min-max
+normalizing, which will preserve the distribution of the measurements while
+transforming them to fall within the 0 to 1 range. 
+
+```{r libs-setup, echo = F, message = F}
+knitr::opts_chunk$set(fig.align = "center")
+ggplot2::theme_set(ggplot2::theme_minimal())
+library(tidyverse)
+```
+
+```{r read-data}
+df <- read_csv("section-two-end-df.csv", show_col_types = F)
+```
+
+```{r min-max-normalize}
+min_max <- function(x, na.rm = TRUE){
+  return((x - min(x)) / (max(x) - min(x)))
+}
+```
+
+To check if our function does indeed retain the original distribution, we can
+use some dummy data to perform a quick analysis.
+
+```{r normalize-function-check}
+dummy_data <- rnorm(500, mean = -3, sd = 20)
+y <- dnorm(dummy_data, mean(dummy_data), sd(dummy_data))
+plot(x = dummy_data, y = y,
+     xlab = "Dummy Data",
+     ylab = "Density")
+```
+
+```{r dummy-data-after-norm}
+dummy_data <- min_max(dummy_data)
+y <- min_max(y)
+
+plot(x = dummy_data, y = y,
+     xlab = "Dummy Data",
+     ylab = "Density",
+     main = "Dummy Data after Normalization")
+```
+
+As you can see, the distribution of points is exactly the same. However, pay
+special attention to the axes. Both the y and x axis range from 0 to 1 exactly.
+This means our normalization function works as expected!
