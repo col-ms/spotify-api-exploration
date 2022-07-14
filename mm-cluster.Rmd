@@ -19,7 +19,7 @@ and for good reason! It's simple, easy to interpret, and not too computationally
 expensive. All around, a very good place to start, so let's go ahead and dive 
 right in!
 
-## Standarding the Data
+# Standarding the Data
 
 Before we can actually apply the clustering, we first need to ensure that all
 of the data we'll be working with has been scaled to have the same range. This
@@ -87,11 +87,10 @@ will carry equal weighting in the clustering, which is exactly what we wanted
 to achieve.
 
 ```{r cluster-libs, message = F}
-library(cluster)
 library(factoextra)
 ```
 
-## Applying the Clustering
+# Applying the Clustering
 
 When using k-means clustering, the user needs to predetermine the number of 
 clusters they'd like the algorithm to sort into. This decision can have a very
@@ -124,7 +123,8 @@ most reasonable choice based on the elbow plot.
 set.seed(333)
 clustering <- kmeans(df[,5:17],
                      centers = 6,
-                     nstart = 25)
+                     nstart = 25,
+                     iter.max = 25)
 set.seed(NULL)
 
 print(clustering)
@@ -154,8 +154,87 @@ plot5 <- fviz_cluster(k5, data = df[,5:17])
 gridExtra::grid.arrange(plot2, plot3, plot4, plot5, nrow = 2)
 ```
 
-These plots don't look too different than our k = 6 plot. Each plot shows a 
-pretty tight grouping along the low **Dim1** values. Note that in our case,
-**Dim1** is the same as **acousticness**. So, it is entirely possible that
-these visualizations are so messy because there isn't a huge variety in
-**acousticness** across most of the observations. 
+These plots don't look too different than our k = 6 plot. Furthermore, our
+`print(clustering)` statement from before told us that our 
+$between\_ss \ /\  total\_ss = 52.9%$. A value this low tends to indicate that
+the k-means clustering simply didn't work with the data. Sure, clusters were
+created, but they're so loosely defined that they aren't worth keeping. It's
+very possible that we are feeding too many variables into the algorithm. To
+overcome this, we can use a technique called *Principal Component Analysis*, or
+PCA for short. 
+
+# Principal Component Analysis
+
+When working with data, it is not uncommon for the majority of information in
+the dataset to be contained within just a few different variables, or at least
+in their interactions. In other words, when working with high dimensionality
+data, it is commonly possible for most of the information within that data to
+be stored using far fewer dimensions. However, figuring out how to effectively
+maintain that information while shrinking the size of its representation is not
+always an easy task. Analyzing correlations between variables is a great place
+to start, as covered at the end of section two of this series. However, that
+is not always enough. This is where PCA comes in.
+
+Principal component analysis is the process of computing the principal
+components of a collection of observations, and using them to perform a change
+of basis on that data in order to reduce the number of features in the data.
+To remove features, PCA calculates the amount of variance in the data that can
+be explained by the $i^{th}$ variable in the set. The first principal component
+explains the greatest amount of variation, and so on until all variables have 
+been assessed. Once that is done, it is typically up to the user to decide how
+many of those variables within the set of *i* variables to retain in their new
+set. Often, an elbow plot is used to help guide said decision.
+
+```{r pca-reduce}
+inputs <- df[,5:17] # create input matrix of only numeric variables
+
+inputs_pca <- prcomp(inputs, 
+                     center = FALSE, # data is 
+                     scale. = FALSE) # already normalized
+
+summary(inputs_pca)
+```
+
+This tells us that by just using the first two principal components, we are able
+to explain 88.36% of the variation in the data. We can further analyze the 
+results of the PCA using a biplot.
+
+```{r pca-biplot}
+album_palette = c(
+  "K.I.D.S. (Deluxe)" = "#387228",
+  "Best Day Ever" = "#C315AA",
+  "Blue Slide Park" = "#3540F2",
+  "Macadelic" = "#767092",
+  "Watching Movies with the Sound Off (Deluxe Edition)" = "#DA252A",
+  "Live From Space" = "#FE675C",
+  "Faces" = "#FDBB1E",
+  "GO:OD AM" = "#A2A2A2",
+  "The Divine Feminine" = "#DDC1BE",
+  "Swimming" = "#668099",
+  "Circles (Deluxe)" = "#464646"
+  )
+
+library(ggbiplot)
+biplot <- ggbiplot(inputs_pca,
+                   obs.scale = 1,
+                   var.scale = 1,
+                   groups = factor(df$album_name),
+                   ellipse = TRUE,
+                   circle = TRUE,
+                   ellipse.prob = 0.68)
+
+biplot <- biplot + 
+  scale_color_manual(values = album_palette, name = "") +
+  theme(legend.position = "none")
+
+print(biplot)
+```
+
+This biplot tells us that nearly all the variables in the data are relatively
+highly correlated. It is also interesting to note that PC1 is negatively 
+correlated with every single variable. None of the arrows point in the positive
+x direction, indicating that there is no positive correlation between any of 
+the variables and PC1. Furthermore, we see that two, maybe three
+distinct groups of points form. This suggests that if we were to apply a 
+clustering algorithm where the number of clusters requires choosing, 
+two or three clusters may yield interesting results.
