@@ -189,14 +189,14 @@ set. Often, an elbow plot is used to help guide said decision.
 inputs <- df[,5:17] # create input matrix of only numeric variables
 
 inputs_pca <- prcomp(inputs, 
-                     center = FALSE, # data is 
+                     center = TRUE, # data is 
                      scale. = FALSE) # already normalized
 
 summary(inputs_pca)
 ```
 
 This tells us that by just using the first two principal components, we are able
-to explain 88.36% of the variation in the data. We can further analyze the 
+to explain 46.3% of the variation in the data. We can further analyze the 
 results of the PCA using a biplot.
 
 ```{r pca-biplot}
@@ -230,11 +230,169 @@ biplot <- biplot +
 print(biplot)
 ```
 
-This biplot tells us that nearly all the variables in the data are relatively
-highly correlated. It is also interesting to note that PC1 is negatively 
-correlated with every single variable. None of the arrows point in the positive
-x direction, indicating that there is no positive correlation between any of 
-the variables and PC1. Furthermore, we see that two, maybe three
-distinct groups of points form. This suggests that if we were to apply a 
-clustering algorithm where the number of clusters requires choosing, 
-two or three clusters may yield interesting results.
+This biplot tells us that **mode** is highly negatively correlated with PC1, as
+indicated by the arrow pointing nearly horizontally to the left. We can also see
+that **acousticness** and **instrumentalness** are influenced similarly by PC2.
+This makes sense, as those two measures both deal with the presence of
+non-electric (acoustic) instruments in a track's sound. We can also see that
+the majority of the observations fall into two relatively neat clusters when
+mapped using PC1 and PC2. The circles around them represent album groupings. 
+These circles tell us that there is a great deal of overlap between most of the
+albums' measures, with *Circles* containing most of the outliers up at the top.
+
+```{r, message = F}
+library(FactoMineR)
+```
+
+```{r new-pca}
+new_inputs_pca <- PCA(inputs,
+                      scale.unit = FALSE,
+                      graph = F,
+                      ncp = 10)
+
+new_inputs_pca$eig
+```
+
+In order to tolerate no more than 15% information loss, we have to use 7 
+principal components (cumulative variance prop. of 87.05401). 
+
+```{r}
+plot.PCA(new_inputs_pca,
+         choix = "ind",
+         habillage = 9,
+         select = "contrib 5",
+         invisible = "quali")
+```
+
+From this plot we find 5 row IDs that are considered to be outliers:
+
+note: really, these are simply the 5 observations farthest from the origin
+of the PCA plot, but they are worth exploring to identify potential similarities
+among them)
+
+* 29
+* 36
+* 37
+* 40
+* 129
+
+Let's take a quick look at those observations to see what values stand out.
+
+```{r outlier-obs}
+print(df[c(29, 36, 37, 40, 129),])
+```
+
+Unsurprisingly, 3/5 points come from the *Circles* album, which has
+consistently had the most distinct sound in the dataset. *Good News* and *Surf*
+in particular have much higher **instrumentalness** values than the other 
+observations. It is very likely that this plays a role in them being grouped
+outside the majority of the observations. Additionally, all 3 of the points
+from *Circles* have pretty high **danceability** measures. All 5 of the points
+have fairly similar **acousticness** measures. This seems like the most likely
+contributor for these points being grouped so closely in the above plot.
+
+```{r pca-var-plot}
+# get principal component descriptions
+pca_dimdesc <- dimdesc(new_inputs_pca)
+
+# get info of PC1 influential features
+pca_dimdesc$Dim.1
+```
+
+The first principal component gets its information from the **mode** and **key**
+variables, both of which can be thought of as factor variables rather than
+quantitative measures. This is important knowledge, as it tells us that our
+data is being assessed largely by a set of factors. That's not really what we
+want, as we want our clustering to be based more so on the quantitative measures
+within the set. Let's create a new set of input variables that contains only
+the quantitative measures. Additionally, we'll pull the **energy** variable back
+to see if we were perhaps too eager to drop that variable from the set.
+
+```{r fresh-df}
+# read in fresh dataset (includes energy variable)
+df <- read_csv("working-data.csv", show_col_types = FALSE)
+
+# example observations from freshly read in dataframe
+print(df[sample(1:nrow(df), 10),])
+```
+
+```{r new-inputs-df}
+# selecting desired variables for fresh input matrix
+inputs <- select(df, 
+                 acousticness,
+                 danceability,
+                 energy,
+                 instrumentalness,
+                 liveness,
+                 loudness,
+                 speechiness,
+                 valence,
+                 duration_ms,
+                 tempo)
+
+# input matrix summary statistics
+summary(inputs)
+```
+
+```{r}
+inputs <- scale(inputs) # we use z-score scaling here to minimize outlier impact
+```
+
+# Clustering (Take 2)
+
+Now that we're working with a different set of input variables, and have changed
+our scaling method, let's try apply the k-means algorithm once again and see
+if our results are more promising this time around.
+
+```{r kmeans-v2}
+# elbow plot using refreshed input matrix
+fviz_nbclust(inputs,
+             kmeans,
+             method = "wss",
+             k.max = 20)
+```
+
+The ideal number of clusters according to the above plot looks to be 8. Using
+this information, we'll fit a model with 8 centers, being sure to set the 
+`nstart` parameter to 25 to allow the function to generate 25 initial clustering
+assignments and choose the path that led to the best result.
+
+```{r new-clustering-model}
+# set seed for reproducability
+set.seed(92)
+
+# fit clustering model
+cluster <- kmeans(inputs,
+                  centers = 8,
+                  iter.max = 25,
+                  nstart = 25)
+
+# display clustering result summary
+print(cluster)
+```
+
+```{r cluster-viz}
+# visualize clustering
+fviz_cluster(cluster,
+             geom = "point",
+             data = inputs,
+             palette = "Dark2",
+             main = "K Means Clustering (k = 8)",
+             alpha = 0.75)
+```
+
+Now that our clustering is complete, we can take the assignment vector and 
+append it the original data, allowing for descriptive statistics at the cluster
+level to be performed. 
+
+```{r}
+# append assignment vector to original dataframe
+df$cluster <- cluster$cluster
+
+# print example df with cluster column shown
+print(
+  select(df, track_name, album_name, cluster) %>% 
+  .[sample(1:nrow(df), 10),]
+)
+```
+
