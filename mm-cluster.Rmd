@@ -396,3 +396,68 @@ print(
 )
 ```
 
+# Clustering Assessment
+
+Now that our clustering assignment is complete, we should take a look at some
+metrics to understand how our model performed on the data.
+
+#### Sum of Squares
+
+The **BSS** of the model is `r cluster$betweenss`.
+
+Interpreting this value:
+
+* Between Sum of Squares, or BSS, is a metric that reports the sum of the
+  squared distance between each cluster's centroid.
+* Generally speaking, **the higher the BSS, the better**, as that indicates the
+  clusters are distinct and the centroids are far apart from one another
+* A large BSS value suggests that characteristics of the data within each
+  cluster are unique and can easily be identified from one another
+* A common k-means performance metric is $ BSS\ /\ TSS $, where $TSS$ is the
+  **Total Sum of Squares**. To get a high value from this equation, we would
+  need to raise the number of clusters. However, because we chose the number
+  of clusters using the elbow plot method (at k = 8), we won't alter the model
+  to optimize the $ BSS\ /\ TSS $ metric, and will stay with k = 8.
+  
+```{r bss-over-tss}
+# print rounded bss / tss (as percentage)
+round(cluster$betweenss / cluster$totss, 4) * 100
+```
+
+This value essentially tells us that each cluster is roughly 53.32% different
+than the other clusters. Since the goal here is to build playlists from the
+clusters, this value seems like a pretty ideal result. We wouldn't want (or
+expect for that matter, since all observations came from a single artist) this
+value to be incredibly high, as that would mean that each playlist created would
+be drastically different from the others. 
+
+#### Prediction Strength
+
+The prediction strength of a clustering assignment refers to the 
+generalizability of the model. In short, it asks the question "How well can
+this clustering react to observations it hasn't seen before?". It is sometimes
+used a metric for validating the choice of k. Common rule of thumb suggests that
+the largest number of clusters that leads to a prediction strength of 0.8 or 0.9
+should be used. Here we'll use it to assess our choice of k = 8.
+
+```{r pred-str-assess}
+fpc::prediction.strength(inputs,
+                         Gmin = 2,
+                         Gmax = 10,
+                         M = 100,
+                         cutoff = 0.8)
+```
+
+We see from this result that the model does not have high prediction strength at
+all. In fact, the largest number of clusters that produces a prediction strength
+larger than our cutoff of 0.8 is simply 1, which will always have a prediction
+strength of 1. This suggests that our data may not vary enough to identify 
+distinct clusters. This is likely due to the fact the the data comes entirely
+from a single artist. Perhaps including a wider variety of music in the dataset
+would allow for more accurate predictions to be made. Nonetheless, prediction
+was never the goal of this project, so we are lucky enough to be able to "write
+off" the results of this test. However, it is very important to understand what
+these results mean and how to interpret them in the context of your data.
+
+# Attribute Analysis by Cluster
+
