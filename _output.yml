@@ -10,7 +10,7 @@
     toc: true
     toc_depth: 4
     
-    df_print: tibble
+    df_print: paged
 
     fig_width: 9
     fig_height: 6
