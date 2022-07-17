@@ -53,7 +53,8 @@ dummy_data <- rnorm(500, mean = -3, sd = 20)
 y <- dnorm(dummy_data, mean(dummy_data), sd(dummy_data))
 plot(x = dummy_data, y = y,
      xlab = "Dummy Data",
-     ylab = "Density")
+     ylab = "Density",
+     main = "Dummy Data before Normalization")
 ```
 
 ```{r dummy-data-after-norm}
@@ -189,8 +190,8 @@ set. Often, an elbow plot is used to help guide said decision.
 inputs <- df[,5:17] # create input matrix of only numeric variables
 
 inputs_pca <- prcomp(inputs, 
-                     center = TRUE, # data is 
-                     scale. = FALSE) # already normalized
+                     center = TRUE, 
+                     scale. = FALSE) # data is already normalized
 
 summary(inputs_pca)
 ```
@@ -199,7 +200,7 @@ This tells us that by just using the first two principal components, we are able
 to explain 46.3% of the variation in the data. We can further analyze the 
 results of the PCA using a biplot.
 
-```{r pca-biplot}
+```{r pca-biplot, message = F}
 album_palette = c(
   "K.I.D.S. (Deluxe)" = "#387228",
   "Best Day Ever" = "#C315AA",
@@ -241,6 +242,7 @@ These circles tell us that there is a great deal of overlap between most of the
 albums' measures, with *Circles* containing most of the outliers up at the top.
 
 ```{r, message = F}
+library(dplyr)
 library(FactoMineR)
 ```
 
@@ -371,7 +373,7 @@ cluster <- kmeans(inputs,
 print(cluster)
 ```
 
-```{r cluster-viz}
+```{r cluster-viz-new}
 # visualize clustering
 fviz_cluster(cluster,
              geom = "point",
@@ -401,7 +403,7 @@ print(
 Now that our clustering assignment is complete, we should take a look at some
 metrics to understand how our model performed on the data.
 
-#### Sum of Squares
+## Sum of Squares
 
 The **BSS** of the model is `r cluster$betweenss`.
 
@@ -413,11 +415,11 @@ Interpreting this value:
   clusters are distinct and the centroids are far apart from one another
 * A large BSS value suggests that characteristics of the data within each
   cluster are unique and can easily be identified from one another
-* A common k-means performance metric is $ BSS\ /\ TSS $, where $TSS$ is the
+* A common k-means performance metric is $BSS\ /\ TSS$, where $TSS$ is the
   **Total Sum of Squares**. To get a high value from this equation, we would
   need to raise the number of clusters. However, because we chose the number
   of clusters using the elbow plot method (at k = 8), we won't alter the model
-  to optimize the $ BSS\ /\ TSS $ metric, and will stay with k = 8.
+  to optimize the $BSS\ /\ TSS$ metric, and will stay with k = 8.
   
 ```{r bss-over-tss}
 # print rounded bss / tss (as percentage)
@@ -431,7 +433,7 @@ expect for that matter, since all observations came from a single artist) this
 value to be incredibly high, as that would mean that each playlist created would
 be drastically different from the others. 
 
-#### Prediction Strength
+## Prediction Strength
 
 The prediction strength of a clustering assignment refers to the 
 generalizability of the model. In short, it asks the question "How well can
@@ -441,6 +443,7 @@ the largest number of clusters that leads to a prediction strength of 0.8 or 0.9
 should be used. Here we'll use it to assess our choice of k = 8.
 
 ```{r pred-str-assess}
+# create prediction strength assessment
 fpc::prediction.strength(inputs,
                          Gmin = 2,
                          Gmax = 10,
@@ -461,3 +464,191 @@ these results mean and how to interpret them in the context of your data.
 
 # Attribute Analysis by Cluster
 
+```{r detach-old-libs, include = F}
+detach("package:ggbiplot", unload = TRUE)
+detach("package:plyr", unload = TRUE)
+```
+
+We can first get some rudimentary information about each cluster by taking a 
+look at the mean value for each of our input variables, along with the number
+of tracks within each cluster.
+
+```{r cluster-mean-explore}
+# display table of cluster means
+df %>%
+  group_by(cluster) %>%
+  select(cluster, colnames(inputs)) %>%
+  summarise(across(.fns = mean),
+            count = n())
+```
+
+Some observations from the above readout:
+
+* Cluster 4 has a substantially higher average **acousticness** measure than
+  the other clusters
+* There doesn't appear to be a great amount of variation regarding the average
+  **danceability** values across the clusters (cluster 7 shows highest)
+* **energy** sees both drastic differences and stark similarities across each
+  cluster. For example, clusters 2 and 5 have extremely similar values, yet
+  clusters 4 and 5 have very different values
+* Average **instrumentalness** is low across the board
+* Average **liveness** values are, again, relatively low across the board, save
+  for cluster 5. This suggests that cluster 5 would contain many tracks from
+  *Live From Space*
+* Decent variation in average **loudness** values
+* Pretty similar groupings in average **speechiness** values, though values
+  across the board are low
+* Average **valence** values display a pretty good amount of variation across
+  all clusters
+* Average **duration_ms** values show that 50% of clusters (1, 2, 7, 8) have
+  very similar measures, with a couple outliers. The drastic difference among
+  those outliers suggests this variable may have been rather influential in the
+  clustering assignment
+* **Tempo** averages see a good amount of variation
+* **count**, the size of each cluster, varies greatly from 3 to 36. It would be
+  interesting to examine how many albums are represented in each cluster
+  
+```{r albums-in-cluster}
+# examine number of albums represented by cluster
+albums_in_clusters_plot <- df %>%
+  group_by(cluster) %>%
+  summarise(n_albums = n_distinct(album_name)) %>%
+  ggplot(aes(factor(cluster), n_albums)) +
+  geom_col() +
+  labs(y = "Count",
+       title = "How Many albums are represented in each Cluster?") +
+  scale_y_continuous(breaks = seq(0, 10, 1)) +
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+
+# examine unique album count relative to cluster size
+n_albums_prop_scaled <- df %>%
+  group_by(cluster) %>%
+  summarise(n_albums_prop = n_distinct(album_name) / n()) %>%
+  ggplot(aes(factor(cluster), n_albums_prop)) +
+  geom_col() +
+  labs(x = "Cluster",
+       y = "Proportion") +
+  scale_x_discrete(labels = seq(1, 8, 1)) 
+
+# display above plots with shared x-axis
+grid::grid.newpage()
+grid::grid.draw(
+  rbind(ggplotGrob(albums_in_clusters_plot), ggplotGrob(n_albums_prop_scaled),
+  size = "last"))
+```
+
+* No cluster contained tracks from all ``r n_distinct(df$album_name)`` albums
+  within the dataset
+* The smallest cluster, sized at just 3 tracks, contains tracks from 3 different
+  albums. This is especially interesting, as it suggests that those three tracks
+  are distinct enough from everything else to be their own cluster, yet similar
+  enough to each other to be placed together, and all originated from different
+  points in Mac's career
+* Outside of the two smallest clusters, most other clusters contained a unique
+  album proportion of ~0.25-0.30. Breaking this down further to investigate
+  the balance of tracks per album included in each cluster could yield some 
+  valuable insights
+
+Let's take a look at how we can further assess each albums representation in
+the clustering assignments.
+
+```{r}
+# generate vector of album names in order of release date
+album_names <- df %>%
+  select(album_name, album_release_date) %>%
+  arrange(album_release_date) %>%
+  unique() %>% .$album_name
+```
+
+
+```{r album-balance-within-clusters}
+# create plot showing # of clusters reached by each album
+df %>% 
+  group_by(album_name, album_release_date) %>%
+  summarise(count = n_distinct(cluster)) %>%
+  ggplot(aes(factor(album_release_date), count)) +
+  geom_col(aes(fill = album_name), show.legend = FALSE) +
+  scale_x_discrete(labels = stringr::str_wrap(album_names, 29)) +
+  scale_fill_manual(values = album_palette) +
+  labs(x = "",
+       y = "# of Clusters Reached",
+       title = "How many Clusters can each Album be found in?") +
+  coord_flip()
+```
+
+This plot tells us that most of our clusters are pretty well-dispersed amongst
+the clusters. There are a couple albums on the lower side, such as *Circles* and
+*Best Day Ever*, which suggests the possibility that these albums contain tracks
+that are more alike to each other when compared to other albums, 
+like *Macadelic*. Additionally, it is worth noting that no album has a track in
+every cluster, as the maximum measure shown above is 7 (remember, we have 8 
+clusters in total). 
+
+Below, we'll utilize the [plotly](https://plotly.com/) library to create an
+interactive plot that allows for visualization of the album-to-cluster 
+distributions. We'll be creating a alluvial plot to show the patterns.
+
+```{r plotly-album-clust-plot, message = F}
+library(plotly)
+```
+
+```{r prep-sankey-data}
+# wrangle data to sankey (wide) format
+sankey_data <- df %>%
+  group_by(album_name, cluster) %>%
+  summarise(count = n(), .groups = "keep")
+
+# attack album color to sankey df for plotting
+sankey_data$color = scales::alpha(
+  unname(album_palette[sankey_data$album_name]), alpha = 0.5)
+```
+
+```{r album-cluster-sankey}
+# create plotly sankey diagram
+fig <- plot_ly(
+  
+  type = "sankey",
+  orientation = "h",
+  
+  node = list(
+    label = c(sort(album_names), 
+              "cluster 1", "cluster 2", "cluster 3", "cluster 4",
+              "cluster 5", "cluster 6", "cluster 7", "cluster 8"),
+    color = c(unname(album_palette[order(factor(names(album_palette)))]), 
+              rep("grey", 8)),
+    pad = 15, 
+    thickness = 20,
+    line = list(
+      color = "black",
+      width = 0.5
+    )
+  ),
+  
+  link = list(
+    source = as.numeric(factor(sankey_data$album_name)) - 1,
+    target = as.numeric(factor(sankey_data$cluster)) + 10,
+    value = sankey_data$count,
+    color = sankey_data$color
+  ),
+  
+  arrangement = "snap"
+)
+
+fig <- fig %>% layout(
+  title = "Album-Cluster Relations",
+  font = list(
+    size = 12
+  )
+)
+
+fig
+```
+
+This diagram reveals that the albums are pretty evenly distributed. There isn't
+any cluster that is dominated by a single album, which is pretty surprising but
+encouraging news! While not comprised mostly of a single album, its interesting
+to note that more than 50% of cluster 6's tracks come from 
+*The Divine Feminine*, *Swimming*, and *Circles (Deluxe)*, Mac's last three
+released albums. This suggests that there exists a particular style that he 
+developed on these albums that is present in each, and is alike enough to be
+grouped by our clustering algorithm.
