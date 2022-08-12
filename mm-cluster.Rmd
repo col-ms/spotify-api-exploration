@@ -462,7 +462,7 @@ was never the goal of this project, so we are lucky enough to be able to "write
 off" the results of this test. However, it is very important to understand what
 these results mean and how to interpret them in the context of your data.
 
-# Attribute Analysis by Cluster
+# Cluster Analysis
 
 ```{r detach-old-libs, include = F}
 detach("package:ggbiplot", unload = TRUE)
@@ -565,7 +565,7 @@ album_names <- df %>%
 # create plot showing # of clusters reached by each album
 df %>% 
   group_by(album_name, album_release_date) %>%
-  summarise(count = n_distinct(cluster)) %>%
+  summarise(count = n_distinct(cluster), .groups = "keep") %>%
   ggplot(aes(factor(album_release_date), count)) +
   geom_col(aes(fill = album_name), show.legend = FALSE) +
   scale_x_discrete(labels = stringr::str_wrap(album_names, 29)) +
@@ -652,3 +652,73 @@ to note that more than 50% of cluster 6's tracks come from
 released albums. This suggests that there exists a particular style that he 
 developed on these albums that is present in each, and is alike enough to be
 grouped by our clustering algorithm.
+
+# Attribute Analysis
+
+```{r create-boxplot-data}
+boxplot_data <- df %>%
+  mutate(cluster = as.factor(cluster)) %>%
+  select(cluster, colnames(inputs))# %>%
+  # pivot_longer(cols = colnames(inputs))
+```
+
+```{r attribute-boxplots}
+fig <- boxplot_data %>% plot_ly(
+  y = ~acousticness,
+  x = ~cluster,
+  type = "box"
+  # transforms = list(
+  #   list(
+  #     type = "filter",
+  #     target = ~name,
+  #     operation = "=",
+  #     value = colnames(inputs)[1]
+  #   )
+  # )
+) %>% layout(
+  title = "Attribute Boxplot by Cluster",
+  yaxis = list(title = "Value"),
+  updatemenus = list(
+    list(
+      y = 1,
+      buttons = list(
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$acousticness)),
+                         label = "Acousticness"),
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$danceability)),
+                         label = "Danceability"),
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$energy)),
+                         label = "Energy"),
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$instrumentalness)),
+                         label = "Instrumentalness"),
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$liveness)),
+                         label = "Liveness"),
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$loudness)),
+                         label = "Loudness"),
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$speechiness)),
+                         label = "Speechiness"),
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$valence)),
+                         label = "Valence"),
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$duration_ms)),
+                         label = "Duration (ms)"),
+        list(method = "restyle",
+             args = list("y", list(boxplot_data$tempo)),
+                         label = "Tempo")
+        )
+    )
+  )
+)
+```
+
+```{r}
+fig
+```
+
