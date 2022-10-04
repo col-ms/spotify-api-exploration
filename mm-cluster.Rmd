@@ -104,7 +104,7 @@ k considered. The idea is to pick the k-value where the plot "bends" (aka the
 point of the elbow). The k-value associated with this point is the number of 
 clusters that produces the lowest total WSS without passing into the realm of
 diminishing returns. Theoretically, it is possible to have a total WSS of 0.
-However, this is only the case when $k = n$, where $n = # of Observations$. 
+However, this is only the case when $k = n$, where $n =\ \#\ of\ Observations$. 
 This extreme case is basically useless, as each observation would be placed into
 its own cluster. For this project, we'll consider k-values ranging from 2 to 15.
 
