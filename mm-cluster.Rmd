@@ -722,3 +722,62 @@ fig <- boxplot_data %>% plot_ly(
 fig
 ```
 
+This plot lets us look at the statistical summary of each cluster for a desired
+attribute. From clicking through the various attributes, we can see that
+**danceability** seems to have the least variation across clusters. We can also
+identify the main contributing attribute for the tracks in cluster 3, which is
+likely **instrumentalness*. The value for cluster 3 is vastly different from all
+other clusters.
+
+# Conclusions
+
+With all of the data clustered and sorted, we can now move on to the conclusion
+section, allowing us to procure a summary of the procedure, identify some key
+takeaways, and reflect on some limitations or areas to improve on moving
+forward.
+
+## Summary
+
+* The goal of this analysis was to explore how Mac Miller's sound shifted over
+  the course of his discography, and to attempt to identify any patterns or
+  trends that may exist in his career, or in a specific album.
+* We used data visualizations, statistical summary measurements, and K-means
+  clustering to work through the data and search for interesting findings.
+* This information could be used to help categorize previously unrelated songs
+  into clusters of sonically similar tracks, which could be useful for dynamic
+  playlist generation or track suggestions.
+  
+## Key Takeaways
+
+* The ideal number of clusters was less than the number of albums included in
+  the data, suggesting that on average, Mac's tracks aren't drastically
+  different from each other across albums, which would've produced more clusters
+  than albums to account for varying styles.
+* Mac's most recent albums tended to have more attributes in common with each
+  other than his earlier albums, suggesting that as his career went on, his
+  style of sound became more defined and consistent.
+  
+## Reflections, Limitations, and Expansions
+
+* Choosing to analyze a single artists' discography made it difficult to produce
+  drastically different clusters. The mean values for each attribute in a
+  cluster tended to not vary greatly, suggesting that the observations
+  themselves, in this case the tracks, were usually more similar than they were
+  different. To remedy this, it would be better to include a larger sample size
+  that contains music from different genres and artists.
+* The number of clusters was chosen based on the elbow method due to its
+  popularity and ease of use. However, clustering attempts based on values
+  chosen using the Gap and Silhouette methods would allow for a more thorough
+  analysis.
+* If the idea were to create playlists based on the clusters, it would be wise
+  to set a floor number of observations per cluster, as a playlist of 3 tracks
+  is not a very useful output for such a purpose. If needed, the number of
+  clusters could be reduced in order to attain this property.
+* A dashboard-like interface where a user could import a playlist or group of
+  songs, see the audio features visualized, select their desired number of 
+  clusters, and then explore the features and contents of each cluster could
+  make for a very interesting and fun project. That seems like a natural
+  progression for this sort of analysis, and would allow end users to interact
+  with the clustering process while exploring music of their choice.
+  
+  That's all for now, thanks for reading!
