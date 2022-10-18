@@ -19,7 +19,7 @@ and for good reason! It's simple, easy to interpret, and not too computationally
 expensive. All around, a very good place to start, so let's go ahead and dive 
 right in!
 
-# Standarding the Data
+# Standardizing the Data
 
 Before we can actually apply the clustering, we first need to ensure that all
 of the data we'll be working with has been scaled to have the same range. This
@@ -360,7 +360,7 @@ this information, we'll fit a model with 8 centers, being sure to set the
 assignments and choose the path that led to the best result.
 
 ```{r new-clustering-model}
-# set seed for reproducability
+# set seed for predictability
 set.seed(92)
 
 # fit clustering model
